@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alberto Landa · Asistentes de IA para tu negocio | GPTs y chatbots para web y WhatsApp</title>
+<meta name="description" content="Asistentes de IA (GPTs) que atienden a tus clientes 24/7 en web y WhatsApp, entrenados con la información de tu negocio. Listos en 48h. Demo gratis.">
+<meta name="theme-color" content="#0a0f14">
+<meta property="og:title" content="Alberto Landa · Asistentes de IA para tu negocio">
+<meta property="og:description" content="GPTs y chatbots a medida para atender a tus clientes 24/7 en web y WhatsApp. Listos en 48h.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0f14; --bg2:#0b1219; --card:#111c25; --card2:#16242f; --line:rgba(255,255,255,.09);
+    --ink:#eaf3f5; --muted:#8fa3ad; --soft:#c4d2d8;
+    --teal:#2dd4bf; --cyan:#22d3ee; --deep:#0fb6a3; --warm:#f6a25c;
+    --grad:linear-gradient(115deg,#22d3ee 0%,#2dd4bf 55%,#0fb6a3 100%);
+    --radius:16px; --shadow:0 24px 60px -24px rgba(0,0,0,.85);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  h1,h2,h3,.logo{font-family:'Sora',sans-serif;letter-spacing:-.02em;font-weight:700}
+  .wrap{width:100%;max-width:1160px;margin:0 auto;padding:0 24px}
+  .eyebrow{display:inline-block;font-size:12.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-bottom:14px}
+  .btn{display:inline-flex;align-items:center;gap:9px;font-weight:600;font-size:15.5px;padding:14px 25px;border-radius:12px;cursor:pointer;border:0;transition:transform .16s ease,box-shadow .22s ease,background .2s ease;font-family:inherit}
+  .btn-primary{background:var(--grad);color:#04201d;box-shadow:0 14px 32px -10px rgba(45,212,191,.55)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 20px 44px -10px rgba(45,212,191,.7)}
+  .btn-ghost{background:rgba(255,255,255,.05);color:var(--ink);border:1px solid var(--line)}
+  .btn-ghost:hover{background:rgba(255,255,255,.1);border-color:rgba(45,212,191,.4)}
+
+  /* HEADER */
+  header{position:sticky;top:0;z-index:50;backdrop-filter:blur(16px);background:rgba(10,15,20,.7);border-bottom:1px solid transparent;transition:border-color .3s ease,background .3s ease}
+  header.scrolled{border-bottom-color:var(--line);background:rgba(10,15,20,.86)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:72px}
+  .logo{display:flex;align-items:center;gap:12px;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:.16em}
+  .logo .mark{width:40px;height:40px;flex:0 0 auto;display:grid;place-items:center}
+  .nav-links{display:flex;gap:32px;font-size:15px;font-weight:500;color:var(--muted);font-family:'Inter'}
+  .nav-links a{position:relative}
+  .nav-links a:after{content:"";position:absolute;left:0;bottom:-6px;width:0;height:2px;background:var(--grad);transition:width .25s ease}
+  .nav-links a:hover{color:var(--ink)}.nav-links a:hover:after{width:100%}
+  .nav .btn{padding:10px 20px;font-size:14.5px}
+  @media(max-width:900px){.nav-links{display:none}}
+
+  /* HERO */
+  .hero{padding:96px 0 72px;position:relative;overflow:hidden}
+  .hero:before{content:"";position:absolute;top:-300px;left:46%;transform:translateX(-50%);width:1000px;height:720px;background:radial-gradient(closest-side,rgba(45,212,191,.20),transparent 70%);pointer-events:none}
+  .hero:after{content:"";position:absolute;top:-80px;right:-180px;width:520px;height:520px;background:radial-gradient(closest-side,rgba(34,211,238,.14),transparent 70%);pointer-events:none}
+  .hero-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:54px;align-items:center;position:relative}
+  .hero h1{font-size:clamp(34px,5vw,57px);font-weight:800;line-height:1.08}
+  .hero h1 .g{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p.lead{font-size:18.5px;color:var(--soft);margin:22px 0 30px;max-width:560px}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap}
+  .pill{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--soft);background:rgba(255,255,255,.04);border:1px solid var(--line);padding:7px 14px;border-radius:999px;margin-bottom:24px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 4px rgba(45,212,191,.18)}
+  @media(max-width:900px){.hero-grid{grid-template-columns:1fr;gap:38px}.hero{padding:56px 0 44px}}
+
+  /* CHAT MOCK */
+  .chat{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:var(--shadow);position:relative}
+  .chat-top{display:flex;align-items:center;gap:10px;padding:6px 6px 14px;border-bottom:1px solid var(--line)}
+  .chat-top .ava{width:34px;height:34px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font-size:16px;color:#04201d}
+  .chat-top b{font-size:13.5px}
+  .chat-top span{font-size:11.5px;color:var(--teal);display:flex;align-items:center;gap:6px}
+  .msgs{display:flex;flex-direction:column;gap:11px;padding:16px 4px 4px}
+  .msg{max-width:82%;padding:11px 15px;border-radius:15px;font-size:13.5px;line-height:1.45}
+  .msg.them{align-self:flex-start;background:rgba(255,255,255,.06);border-bottom-left-radius:5px}
+  .msg.me{align-self:flex-end;background:var(--grad);color:#04201d;font-weight:500;border-bottom-right-radius:5px}
+  .typing{align-self:flex-start;background:rgba(255,255,255,.06);padding:13px 16px;border-radius:15px;border-bottom-left-radius:5px;display:flex;gap:5px}
+  .typing i{width:7px;height:7px;border-radius:50%;background:var(--muted);display:inline-block;animation:bl 1.2s infinite}
+  .typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+  @keyframes bl{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+  .chat-badge{position:absolute;top:-15px;right:-12px;background:var(--warm);color:#3a2300;font-weight:700;font-size:12px;padding:8px 13px;border-radius:999px;box-shadow:0 12px 26px -8px rgba(246,162,92,.55);transform:rotate(3deg)}
+
+  /* STATS */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:60px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;text-align:center}
+  .stat b{display:block;font-family:'Sora';font-size:30px;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat span{font-size:12.5px;color:var(--muted)}
+  @media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+  /* SECTION */
+  .sec{padding:84px 0}
+  .sec-head{max-width:700px;margin:0 auto 52px;text-align:center}
+  .sec-head h2{font-size:clamp(27px,3.6vw,40px);font-weight:800}
+  .sec-head p{color:var(--muted);font-size:17.5px;margin-top:14px}
+
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  @media(max-width:820px){.grid3{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:28px;transition:transform .2s ease,border-color .25s ease}
+  .card:hover{transform:translateY(-5px);border-color:rgba(45,212,191,.4)}
+  .ic{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font-size:22px;margin-bottom:16px;background:rgba(45,212,191,.12);border:1px solid rgba(45,212,191,.28)}
+  .card h3{font-size:18.5px;margin-bottom:9px}
+  .card p{color:var(--muted);font-size:14.5px}
+
+  /* STEPS */
+  .steps{counter-reset:s;display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+  @media(max-width:820px){.steps{grid-template-columns:1fr}}
+  .step{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:28px 24px 24px;position:relative}
+  .step:before{counter-increment:s;content:counter(s);position:absolute;top:-16px;left:24px;width:38px;height:38px;border-radius:11px;background:var(--grad);color:#04201d;display:grid;place-items:center;font-family:'Sora';font-weight:800;font-size:16px;box-shadow:0 12px 24px -8px rgba(45,212,191,.55)}
+  .step h3{font-size:16.5px;margin:14px 0 8px}
+  .step p{color:var(--muted);font-size:14px}
+
+  /* PRICING */
+  .prices{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;align-items:stretch}
+  @media(max-width:820px){.prices{grid-template-columns:1fr}}
+  .price{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:32px 26px;display:flex;flex-direction:column}
+  .price.feat{position:relative;background:linear-gradient(180deg,var(--card2),var(--card));box-shadow:var(--shadow)}
+  .price.feat:before{content:"";position:absolute;inset:0;border-radius:18px;padding:1.5px;background:var(--grad);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+  .tag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--grad);color:#04201d;font-weight:700;font-size:12px;padding:6px 16px;border-radius:999px;white-space:nowrap}
+  .price h3{font-size:18px}
+  .price .amt{font-family:'Sora';font-size:42px;font-weight:800;margin:10px 0 2px}
+  .price .sub{font-size:13px;color:var(--muted);margin-bottom:18px}
+  .price ul{list-style:none;display:flex;flex-direction:column;gap:11px;margin:6px 0 24px;font-size:14.5px}
+  .price li{display:flex;gap:10px;align-items:flex-start;color:var(--soft)}
+  .price li svg{flex:0 0 auto;margin-top:3px}
+  .price .btn{width:100%;justify-content:center;margin-top:auto}
+  .maint{margin-top:24px;text-align:center;color:var(--muted);font-size:14.5px;background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:16px}
+  .maint b{color:var(--ink)}
+
+  /* QUOTES */
+  .quote{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:26px}
+  .quote .stars{color:var(--warm);font-size:15px;letter-spacing:2px;margin-bottom:12px}
+  .quote p{font-size:15px;margin-bottom:16px;color:var(--soft)}
+  .quote .who{display:flex;align-items:center;gap:12px}
+  .quote .who .av{width:40px;height:40px;border-radius:50%;background:var(--grad);color:#04201d;display:grid;place-items:center;font-weight:700;font-family:'Sora'}
+  .quote .who b{font-size:14px;display:block}
+  .quote .who span{font-size:12px;color:var(--muted)}
+
+  /* FAQ (animado) */
+  .faq{max-width:790px;margin:0 auto}
+  .qa{border:1px solid var(--line);border-radius:14px;background:var(--card);margin-bottom:12px;overflow:hidden;transition:border-color .25s ease}
+  .qa.open{border-color:rgba(45,212,191,.4)}
+  .qa-q{width:100%;text-align:left;background:none;border:0;color:var(--ink);font-family:'Sora';font-weight:600;font-size:16px;cursor:pointer;padding:19px 22px;display:flex;justify-content:space-between;align-items:center;gap:16px}
+  .qa-q .chev{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:rgba(45,212,191,.12);color:var(--teal);display:grid;place-items:center;font-size:18px;transition:transform .35s cubic-bezier(.4,0,.2,1),background .25s ease}
+  .qa.open .qa-q .chev{transform:rotate(135deg);background:var(--grad);color:#04201d}
+  .qa-a{max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.4,0,.2,1)}
+  .qa-a p{padding:0 22px 20px;color:var(--muted);font-size:15px}
+
+  /* CTA BAND */
+  .cta-band{position:relative;border-radius:26px;padding:58px 40px;text-align:center;overflow:hidden;background:var(--grad)}
+  .cta-band:after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 78% 18%,rgba(255,255,255,.28),transparent 52%)}
+  .cta-band>*{position:relative}
+  .cta-band h2{font-size:clamp(26px,3.4vw,37px);color:#04201d;font-weight:800}
+  .cta-band p{color:rgba(4,32,29,.8);font-size:17.5px;margin:14px 0 28px;font-weight:500}
+  .cta-band .btn{background:#04201d;color:#eafffb}
+  .cta-band .btn.alt{background:rgba(255,255,255,.92);color:#04201d}
+  .cta-band .btn:hover{transform:translateY(-2px)}
+
+  /* FOOTER */
+  footer{border-top:1px solid var(--line);padding:48px 0 30px;margin-top:84px;color:var(--muted);font-size:14px}
+  .foot-top{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap}
+  .foot-brand{max-width:300px}
+  .foot-brand p{margin-top:12px;font-size:13.5px}
+  .foot-col h4{font-family:'Sora';color:var(--ink);font-size:13px;text-transform:uppercase;letter-spacing:.12em;margin-bottom:14px}
+  .foot-col a{display:block;color:var(--muted);margin-bottom:9px;font-size:14px}
+  .foot-col a:hover{color:var(--teal)}
+  .foot-bottom{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center;margin-top:34px;padding-top:22px;border-top:1px solid var(--line);font-size:13px}
+
+  /* REVEAL */
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  /* COOKIE BANNER */
+  #cookie{position:fixed;bottom:18px;left:18px;right:18px;max-width:560px;margin:0 auto;z-index:120;background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:18px 20px;box-shadow:var(--shadow);display:none;gap:14px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+  #cookie p{font-size:13.5px;color:var(--soft);flex:1;min-width:220px}
+  #cookie a{color:var(--teal);text-decoration:underline}
+  #cookie .btn{padding:10px 18px;font-size:14px}
+
+  /* CHATBOT */
+  #botLauncher{position:fixed;bottom:24px;right:24px;z-index:90;display:flex;align-items:center;gap:10px;background:var(--grad);color:#04201d;border:0;cursor:pointer;padding:13px 20px 13px 17px;border-radius:999px;font-family:inherit;font-weight:700;font-size:15px;box-shadow:0 18px 42px -12px rgba(45,212,191,.7);transition:transform .18s ease}
+  #botLauncher:hover{transform:translateY(-3px) scale(1.03)}
+  #botLauncher .bdot{position:absolute;top:8px;right:12px;width:11px;height:11px;background:var(--warm);border:2px solid #08312c;border-radius:50%;animation:pulse 2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(246,162,92,.6)}70%{box-shadow:0 0 0 9px rgba(246,162,92,0)}100%{box-shadow:0 0 0 0 rgba(246,162,92,0)}}
+  #botPanel{position:fixed;bottom:24px;right:24px;z-index:95;width:392px;max-width:calc(100vw - 32px);height:600px;max-height:calc(100vh - 48px);background:var(--bg2);border:1px solid var(--line);border-radius:20px;box-shadow:0 30px 80px -20px rgba(0,0,0,.8);display:none;flex-direction:column;overflow:hidden}
+  #botPanel.open{display:flex;animation:slideUp .26s ease}
+  @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+  .bot-head{background:var(--grad);padding:17px 18px;display:flex;align-items:center;gap:12px;position:relative}
+  .bot-head .ava{width:42px;height:42px;border-radius:50%;background:rgba(4,32,29,.16);display:grid;place-items:center;font-size:20px}
+  .bot-head b{color:#04201d;font-size:14.5px;display:block;font-family:'Sora'}
+  .bot-head span{color:rgba(4,32,29,.82);font-size:11.5px;display:flex;align-items:center;gap:6px;font-weight:500}
+  .bot-head span:before{content:"";width:7px;height:7px;border-radius:50%;background:#04201d;display:inline-block}
+  .bot-close{position:absolute;top:14px;right:14px;background:rgba(4,32,29,.16);border:0;color:#04201d;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px;line-height:1}
+  .bot-close:hover{background:rgba(4,32,29,.3)}
+  .bot-body{flex:1;overflow-y:auto;padding:18px 16px;display:flex;flex-direction:column;gap:12px}
+  .bot-body::-webkit-scrollbar{width:7px}.bot-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:9px}
+  .bmsg{max-width:86%;padding:11px 15px;border-radius:15px;font-size:14px;line-height:1.5;animation:slideUp .25s ease}
+  .bmsg.bot{align-self:flex-start;background:var(--card2);border:1px solid var(--line);border-bottom-left-radius:5px}
+  .bmsg.user{align-self:flex-end;background:var(--grad);color:#04201d;font-weight:500;border-bottom-right-radius:5px}
+  .bmsg b{font-weight:700}.bmsg ul{margin:7px 0 2px;padding-left:18px}.bmsg li{margin:3px 0}
+  .bmsg a{color:var(--teal);font-weight:600;text-decoration:underline}
+  .btyping{align-self:flex-start;background:var(--card2);border:1px solid var(--line);padding:13px 16px;border-radius:15px;border-bottom-left-radius:5px;display:flex;gap:5px}
+  .btyping i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:bl 1.2s infinite}
+  .btyping i:nth-child(2){animation-delay:.2s}.btyping i:nth-child(3){animation-delay:.4s}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;padding:4px 16px 6px}
+  .chip{background:rgba(45,212,191,.12);border:1px solid rgba(45,212,191,.32);color:#bdeee7;font-family:inherit;font-size:13px;font-weight:600;padding:8px 13px;border-radius:999px;cursor:pointer;transition:background .15s ease}
+  .chip:hover{background:rgba(45,212,191,.26)}
+  .bot-input{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--line);background:var(--bg)}
+  .bot-input input{flex:1;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:12px 16px;color:var(--ink);font-family:inherit;font-size:14px;outline:none}
+  .bot-input input:focus{border-color:var(--teal)}
+  .bot-input button{background:var(--grad);border:0;width:44px;height:44px;border-radius:50%;cursor:pointer;display:grid;place-items:center;flex:0 0 auto}
+  @media(max-width:480px){#botPanel{height:calc(100vh - 24px);bottom:12px;right:12px;border-radius:16px}}
+</style>
+</head>
+<body>
+
+<header id="hdr">
+  <div class="wrap nav">
+    <a class="logo" href="#top" aria-label="Alberto Landa, inicio">
+      <span class="mark">
+        <svg viewBox="0 0 44 44" width="40" height="40" role="img" aria-label="Logo Alberto Landa">
+          <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#22d3ee"/><stop offset=".55" stop-color="#2dd4bf"/><stop offset="1" stop-color="#0fb6a3"/>
+          </linearGradient></defs>
+          <rect x="1.5" y="1.5" width="41" height="41" rx="13" fill="none" stroke="url(#lg)" stroke-width="2.4"/>
+          <path d="M14 30 L22 13 L30 30" fill="none" stroke="url(#lg)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M17.4 24.2 H26.6" stroke="url(#lg)" stroke-width="2.8" stroke-linecap="round"/>
+          <circle cx="22" cy="13" r="2.6" fill="url(#lg)"/>
+        </svg>
+      </span>
+      Alberto Landa
+    </a>
+    <nav class="nav-links">
+      <a href="#problema">Problema</a>
+      <a href="#como">Cómo funciona</a>
+      <a href="#planes">Planes</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a class="btn btn-primary" href="#contacto">Demo gratis</a>
+  </div>
+</header>
+
+<a id="top"></a>
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="pill"><span class="dot"></span> Inteligencia artificial aplicada a tu negocio</span>
+      <h1>Tu negocio atiende a sus clientes <span class="g">24/7</span>, sin contratar a nadie.</h1>
+      <p class="lead">Diseño asistentes de IA entrenados con la información de tu negocio, que responden en tu web y en WhatsApp con el tono de tu marca. Funcionando en 48 horas.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#contacto">Solicita tu demo gratis →</a>
+        <a class="btn btn-ghost" href="#planes">Ver planes</a>
+      </div>
+    </div>
+    <div class="chat reveal">
+      <span class="chat-badge">Listo en 48h ⚡</span>
+      <div class="chat-top">
+        <span class="ava">✦</span>
+        <div><b>Asistente · Clínica Dental Sonríe</b><span><span></span>En línea · responde al instante</span></div>
+      </div>
+      <div class="msgs">
+        <div class="msg them">Hola 👋 ¿tenéis cita esta semana y cuánto cuesta una limpieza?</div>
+        <div class="msg me">¡Hola! Sí: jueves 17:30 o viernes 10:00. La limpieza son 45 €. ¿Te la reservo? 🦷</div>
+        <div class="msg them">El jueves perfecto</div>
+        <div class="typing"><i></i><i></i><i></i></div>
+      </div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="stats reveal">
+      <div class="stat"><b>70%</b><span>de las consultas son repetitivas y automatizables</span></div>
+      <div class="stat"><b>60-80%</b><span>de esas consultas las resuelve solo</span></div>
+      <div class="stat"><b>+50h</b><span>al mes liberadas para tu equipo</span></div>
+      <div class="stat"><b>48h</b><span>y tienes tu asistente funcionando</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="problema">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">El problema</span>
+      <h2>Pierdes tiempo y ventas respondiendo siempre lo mismo</h2>
+      <p>Tus clientes esperan respuestas rápidas, pero tu equipo es limitado y el presupuesto no da para contratar a alguien solo para el chat.</p>
+    </div>
+    <div class="grid3">
+      <div class="card reveal"><div class="ic">🌙</div><h3>Mensajes sin responder</h3><p>Llegan dudas fuera de horario y los fines de semana. Cuando contestas, el cliente ya se ha ido a la competencia.</p></div>
+      <div class="card reveal"><div class="ic">🔁</div><h3>Las mismas preguntas</h3><p>Horarios, precios, disponibilidad, estado de un pedido… tu equipo repite lo mismo decenas de veces al día.</p></div>
+      <div class="card reveal"><div class="ic">💸</div><h3>Ventas que se escapan</h3><p>Cada respuesta lenta es una oportunidad perdida. Y contratar más personal de soporte no sale rentable.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="solucion" style="background:var(--bg2)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">La solución</span>
+      <h2>Un asistente que trabaja por ti, entrenado con lo que tú sabes</h2>
+      <p>No es un bot genérico de respuestas enlatadas. Entiende el contexto, resuelve, recomienda y deriva a una persona cuando hace falta.</p>
+    </div>
+    <div class="grid3">
+      <div class="card reveal"><div class="ic">🧠</div><h3>Aprende tu negocio</h3><p>Lo entreno con tus documentos, catálogo y respuestas. Habla con el tono de tu marca.</p></div>
+      <div class="card reveal"><div class="ic">💬</div><h3>Web + WhatsApp</h3><p>Atiende en los canales donde están tus clientes, integrado y funcionando sin complicaciones.</p></div>
+      <div class="card reveal"><div class="ic">📈</div><h3>Mejora con el tiempo</h3><p>Optimizo el asistente con tus datos reales de uso para que cada mes responda mejor.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="como">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Cómo trabajamos</span>
+      <h2>De la idea a tu asistente funcionando, en 4 pasos</h2>
+    </div>
+    <div class="steps">
+      <div class="step reveal"><h3>Análisis previo</h3><p>20 min gratis para detectar qué conviene automatizar. El 80% de proyectos de IA fracasan por saltarse esto. Yo empiezo aquí.</p></div>
+      <div class="step reveal"><h3>Entreno tu GPT</h3><p>Con tu información y el tono de tu marca, para que responda como lo harías tú.</p></div>
+      <div class="step reveal"><h3>Integro en 48h</h3><p>Lo dejo funcionando en tu web y/o WhatsApp, probado y listo para atender.</p></div>
+      <div class="step reveal"><h3>Mantengo y optimizo</h3><p>Soporte directo y mejoras continuas según el uso real de tus clientes.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="planes" style="background:var(--bg2)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Planes</span>
+      <h2>Precios claros, sin sorpresas</h2>
+      <p>Todos incluyen el análisis previo gratuito. Pago de creación único + mantenimiento mensual opcional.</p>
+    </div>
+    <div class="prices">
+      <div class="price reveal">
+        <h3>Básico</h3><div class="amt">99 €</div><div class="sub">Ideal para empezar o probar</div>
+        <ul>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg> GPT personalizado funcional</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg> Entrega en 48 horas</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg> Análisis previo gratuito</li>
+        </ul>
+        <a class="btn btn-ghost" href="#contacto">Empezar</a>
+      </div>
+      <div class="price feat reveal">
+        <span class="tag">★ El más elegido</span>
+        <h3>Profesional</h3><div class="amt">299 €</div><div class="sub">Para pymes que quieren resultados</div>
+        <ul>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg> GPT a medida</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg> Integración web + WhatsApp</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg> Ajustes de tono y estilo</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg> Funcionalidades avanzadas</li>
+        </ul>
+        <a class="btn btn-primary" href="#contacto">Solicitar demo</a>
+      </div>
+      <div class="price reveal">
+        <h3>Empresa</h3><div class="amt">599 €</div><div class="sub">Automatización completa + soporte</div>
+        <ul>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg> Automatización avanzada</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg> Memoria profunda</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg> Conexión a tu documentación</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg> Soporte + reportes mensuales</li>
+        </ul>
+        <a class="btn btn-ghost" href="javascript:void(0)" onclick="openBot('empresa')">Preguntar al asistente</a>
+      </div>
+    </div>
+    <div class="maint reveal">🔧 <b>Mantenimiento opcional — 29 €/mes:</b> soporte directo, actualizaciones y optimización continua de tu asistente.</div>
+  </div>
+</section>
+
+<section class="sec" id="opiniones">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Opiniones</span>
+      <h2>Negocios que ya ahorran tiempo cada día</h2>
+    </div>
+    <div class="grid3">
+      <div class="quote reveal"><div class="stars">★★★★★</div><p>"En 48 horas teníamos un asistente respondiendo pedidos y cambios de talla. Bajó el volumen de WhatsApp un 35% y subieron las conversiones."</p><div class="who"><span class="av">M</span><div><b>María G.</b><span>E-commerce de moda</span></div></div></div>
+      <div class="quote reveal"><div class="stars">★★★★★</div><p>"Las consultas repetitivas de precios y horarios ahora las atiende el GPT. El equipo está más libre y los pacientes reciben respuesta inmediata."</p><div class="who"><span class="av">J</span><div><b>Javier R.</b><span>Clínica dental</span></div></div></div>
+      <div class="quote reveal"><div class="stars">★★★★★</div><p>"Convertimos nuestro temario en un asistente para alumnos. Responde dudas y reduce correos. La satisfacción subió notablemente."</p><div class="who"><span class="av">L</span><div><b>Laura S.</b><span>Academia de idiomas</span></div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="faq" style="background:var(--bg2)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Preguntas frecuentes</span>
+      <h2>Todo lo que sueles preguntar antes de empezar</h2>
+    </div>
+    <div class="faq reveal">
+      <div class="qa open"><button class="qa-q" onclick="toggleFaq(this)">¿La IA va a sustituir a mis empleados? <span class="chev">+</span></button><div class="qa-a"><p>No. Se encarga de lo repetitivo para que tu equipo dedique su tiempo a lo que de verdad aporta valor: vender, asesorar y cuidar al cliente.</p></div></div>
+      <div class="qa"><button class="qa-q" onclick="toggleFaq(this)">¿Cuánto tarda en estar listo? <span class="chev">+</span></button><div class="qa-a"><p>En 48 horas tienes una primera versión funcional, probada y lista para atender.</p></div></div>
+      <div class="qa"><button class="qa-q" onclick="toggleFaq(this)">¿Mis datos y los de mis clientes están seguros? <span class="chev">+</span></button><div class="qa-a"><p>Sí. Trabajo con buenas prácticas de privacidad y seguridad, conforme al RGPD, en todo el proceso.</p></div></div>
+      <div class="qa"><button class="qa-q" onclick="toggleFaq(this)">¿Puedo adaptarlo al tono de mi marca? <span class="chev">+</span></button><div class="qa-a"><p>Por supuesto. El asistente habla como lo harías tú, con la personalidad de tu negocio.</p></div></div>
+      <div class="qa"><button class="qa-q" onclick="toggleFaq(this)">¿Funciona en varios idiomas? <span class="chev">+</span></button><div class="qa-a"><p>Sí: español, inglés, francés, alemán y más. Configurable según tu público.</p></div></div>
+      <div class="qa"><button class="qa-q" onclick="toggleFaq(this)">¿Hay costes ocultos? <span class="chev">+</span></button><div class="qa-a"><p>No. El precio que ves es el precio final, sin sorpresas.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="contacto">
+  <div class="wrap">
+    <div class="cta-band reveal">
+      <h2>Pide tu demo gratis y ve tu asistente funcionando</h2>
+      <p>Te muestro un asistente con tu propio caso antes de que pagues nada.</p>
+      <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+        <a class="btn" href="mailto:albertolm822@gmail.com?subject=Quiero%20mi%20demo%20gratis%20de%20asistente%20IA">📧 Escríbeme por email</a>
+        <a class="btn alt" href="https://wa.me/34615076926?text=Hola%20Alberto,%20quiero%20una%20demo%20de%20asistente%20IA%20para%20mi%20negocio">💬 Hablar por WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <div class="logo" style="font-size:14px"><span class="mark"><svg viewBox="0 0 44 44" width="32" height="32" aria-hidden="true"><rect x="1.5" y="1.5" width="41" height="41" rx="13" fill="none" stroke="#2dd4bf" stroke-width="2.4"/><path d="M14 30 L22 13 L30 30" fill="none" stroke="#2dd4bf" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M17.4 24.2 H26.6" stroke="#2dd4bf" stroke-width="2.8" stroke-linecap="round"/><circle cx="22" cy="13" r="2.6" fill="#2dd4bf"/></svg></span> Alberto Landa</div>
+        <p>Asistentes de IA y consultoría para negocios. Atención 24/7 en web y WhatsApp.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Navegación</h4>
+        <a href="#problema">El problema</a>
+        <a href="#como">Cómo funciona</a>
+        <a href="#planes">Planes</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="foot-col">
+        <h4>Legal</h4>
+        <a href="aviso-legal.html">Aviso legal</a>
+        <a href="privacidad.html">Política de privacidad</a>
+        <a href="cookies.html">Política de cookies</a>
+      </div>
+      <div class="foot-col">
+        <h4>Contacto</h4>
+        <a href="mailto:albertolm822@gmail.com">albertolm822@gmail.com</a>
+        <a href="https://wa.me/34615076926">WhatsApp +34 615 076 926</a>
+        <a href="https://www.linkedin.com/in/alberto-landa-ai-consultant-498697381/">LinkedIn</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Alberto Landa. Todos los derechos reservados.</span>
+      <span>Hecho con IA · Diseño centrado en tus clientes</span>
+    </div>
+  </div>
+</footer>
+
+<!-- COOKIE BANNER -->
+<div id="cookie">
+  <p>Usamos solo cookies técnicas necesarias para el funcionamiento del sitio. Consulta la <a href="cookies.html">política de cookies</a>.</p>
+  <button class="btn btn-primary" onclick="okCookies()">Entendido</button>
+</div>
+
+<!-- CHATBOT -->
+<button id="botLauncher" onclick="toggleBot()"><span class="bdot"></span>💬 Pregúntame lo que quieras</button>
+<div id="botPanel" role="dialog" aria-label="Asistente virtual">
+  <div class="bot-head">
+    <span class="ava">✦</span>
+    <div><b>Asistente de Alberto Landa</b><span>Responde al instante · 24/7</span></div>
+    <button class="bot-close" onclick="toggleBot()" aria-label="Cerrar">✕</button>
+  </div>
+  <div class="bot-body" id="botBody"></div>
+  <div class="chips" id="botChips"></div>
+  <form class="bot-input" onsubmit="return sendUser()">
+    <input id="botInput" type="text" placeholder="Escribe tu pregunta…" autocomplete="off">
+    <button type="submit" aria-label="Enviar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#04201d" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg></button>
+  </form>
+</div>
+
+<script>
+/* header shadow on scroll */
+const hdr=document.getElementById('hdr');
+addEventListener('scroll',()=>hdr.classList.toggle('scrolled',scrollY>10));
+/* reveal on scroll */
+const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+/* FAQ smooth accordion */
+function toggleFaq(btn){const qa=btn.parentElement,a=qa.querySelector('.qa-a');if(qa.classList.contains('open')){a.style.maxHeight=null;qa.classList.remove('open');}else{qa.classList.add('open');a.style.maxHeight=a.scrollHeight+'px';}}
+document.querySelectorAll('.qa.open .qa-a').forEach(a=>a.style.maxHeight=a.scrollHeight+'px');
+/* cookies */
+function okCookies(){try{localStorage.setItem('ck','1')}catch(e){}document.getElementById('cookie').style.display='none';}
+(function(){let ok=false;try{ok=localStorage.getItem('ck')==='1'}catch(e){}if(!ok)setTimeout(()=>document.getElementById('cookie').style.display='flex',1200);})();
+
+/* CHATBOT */
+const WA="https://wa.me/34615076926?text=Hola%20Alberto%2C%20vengo%20de%20tu%20web%20y%20quiero%20info";
+const MAIL="mailto:albertolm822@gmail.com?subject=Consulta%20desde%20la%20web";
+const contact='<br><br>👉 <a href="'+WA+'" target="_blank" rel="noopener">Hablar por WhatsApp</a> · <a href="'+MAIL+'">Escribir un email</a>';
+const INTENTS=[
+ {k:["plan","planes","precio","precios","cuesta","cuanto cuesta","tarifa","tarifas","cobras","vale"],
+  a:'Tengo <b>3 planes</b>, todos con <b>análisis previo gratis</b>:<ul><li><b>Básico — 99 €</b>: GPT funcional, entrega en 48h. Para empezar o probar.</li><li><b>Profesional — 299 €</b> ⭐ <i>el más elegido</i>: GPT a medida + integración web/WhatsApp + ajustes avanzados.</li><li><b>Empresa — 599 €</b>: automatización completa, memoria profunda, soporte y reportes.</li></ul>🔧 <b>Mantenimiento opcional: 29 €/mes</b>.'+contact,
+  c:["Detalle del Profesional","¿Cuánto tarda?","Quiero una demo"]},
+ {k:["basico","básico","99","mas barato","barato","empezar","probar"],
+  a:'<b>Plan Básico — 99 €</b> (pago único):<ul><li>GPT personalizado 100% funcional</li><li>Entrega en 48 horas</li><li>Análisis previo gratuito</li></ul>Ideal para empezar con poca inversión.'+contact,c:["Ver los 3 planes","Quiero una demo"]},
+ {k:["profesional","pro","299","el mas elegido","popular","recomendado"],
+  a:'<b>Plan Profesional — 299 €</b> (el más elegido):<ul><li>GPT a medida</li><li>Integración web <b>y</b> WhatsApp</li><li>Ajustes de tono y estilo</li><li>Funcionalidades avanzadas</li></ul>El equilibrio perfecto para una pyme.'+contact,c:["Plan Empresa","¿Cómo funciona?","Quiero una demo"]},
+ {k:["empresa","599","completo","premium","avanzado","grande"],
+  a:'<b>Plan Empresa — 599 €</b>:<ul><li>Automatización avanzada</li><li>Memoria profunda</li><li>Conexión con tu documentación</li><li>Soporte continuo + reportes mensuales</li></ul>'+contact,c:["Comparar planes","Quiero una demo"]},
+ {k:["mantenimiento","mensual","29","actualiza"],a:'El <b>mantenimiento es opcional: 29 €/mes</b>: soporte directo, actualizaciones y optimización continua. Puedes contratarlo con cualquier plan.'+contact,c:["Ver planes","Quiero una demo"]},
+ {k:["tarda","tiempo","cuando","rapido","plazo","48","listo"],a:'⚡ En <b>48 horas</b> tienes una primera versión funcional, probada y lista para atender.'+contact,c:["Ver planes","¿Cómo funciona?"]},
+ {k:["como funciona","funciona","proceso","pasos","como se hace"],a:'Trabajamos en <b>4 pasos</b>:<ul><li><b>1.</b> Análisis previo (20 min gratis).</li><li><b>2.</b> Entreno tu GPT con tu info y tono.</li><li><b>3.</b> Integro en 48h en web/WhatsApp.</li><li><b>4.</b> Mantengo y optimizo.</li></ul>'+contact,c:["Ver planes","Quiero una demo"]},
+ {k:["integra","integracion","web","whatsapp","pagina","sitio","canal"],a:'Integro tu asistente en tu <b>web</b> y/o <b>WhatsApp Business</b>. Me encargo de toda la parte técnica.'+contact,c:["Ver planes","¿Es seguro?"]},
+ {k:["seguro","seguridad","datos","privacidad","gdpr","rgpd","proteg"],a:'🔒 Sí. Trabajo con <b>buenas prácticas de privacidad y seguridad</b>, conforme al RGPD.'+contact,c:["Ver planes","Quiero una demo"]},
+ {k:["idioma","idiomas","ingles","frances","aleman","multilingue"],a:'🌍 Funciona en <b>varios idiomas</b>: español, inglés, francés, alemán y más.'+contact,c:["Ver planes","Quiero una demo"]},
+ {k:["sustitu","empleado","despedir","reemplaza","personal"],a:'No sustituye a tu equipo 🙂. Se encarga de lo <b>repetitivo</b> para que tus personas dediquen su tiempo a lo que aporta valor.'+contact,c:["¿Cómo funciona?","Ver planes"]},
+ {k:["para quien","sector","sectores","sirve","clinica","tienda","academia","ecommerce","autonomo"],a:'Funciona genial para <b>clínicas</b>, <b>academias</b>, <b>e-commerce</b> y <b>profesionales/autónomos</b>.'+contact,c:["Ver planes","Quiero una demo"]},
+ {k:["demo","contacto","hablar","contactar","quiero","interesa","presupuesto","alberto","telefono","email","correo"],a:'¡Genial! La <b>demo es gratis</b>: te muestro un asistente con tu caso antes de pagar nada. Escríbeme:'+contact,c:["Ver planes","¿Cómo funciona?"]},
+ {k:["gracias","genial","perfecto","ok","vale"],a:'¡A ti! 😊 Si tienes otra duda, aquí estoy. Y cuando quieras, pide tu <b>demo gratis</b>.'+contact,c:["Ver planes","Quiero una demo"]}
+];
+const FALLBACK='Buena pregunta 🤔. Para responderte con todo detalle, lo mejor es que hables directamente con Alberto:'+contact;
+const START=["Ver planes y precios","¿Cuánto tarda?","¿Cómo funciona?","¿Es seguro?","Hablar con Alberto"];
+const body=document.getElementById('botBody'),chipsEl=document.getElementById('botChips'),input=document.getElementById('botInput');
+let started=false;
+function toggleBot(){const p=document.getElementById('botPanel');p.classList.toggle('open');if(p.classList.contains('open')&&!started){started=true;greet();}if(p.classList.contains('open'))setTimeout(()=>input.focus(),200);}
+function add(html,who){const d=document.createElement('div');d.className='bmsg '+who;d.innerHTML=html;body.appendChild(d);body.scrollTop=body.scrollHeight;}
+function chips(list){chipsEl.innerHTML='';list.forEach(t=>{const b=document.createElement('button');b.className='chip';b.textContent=t;b.onclick=()=>handle(t);chipsEl.appendChild(b);});}
+function typing(){const d=document.createElement('div');d.className='btyping';d.id='typ';d.innerHTML='<i></i><i></i><i></i>';body.appendChild(d);body.scrollTop=body.scrollHeight;}
+function untype(){const t=document.getElementById('typ');if(t)t.remove();}
+function norm(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
+function greet(){chips([]);typing();setTimeout(()=>{untype();add('¡Hola! 👋 Soy el asistente de <b>Alberto Landa</b>. Puedo contarte los <b>planes</b>, <b>precios</b>, cómo funciona, plazos y resolver tus dudas. ¿Qué te gustaría saber?','bot');chips(START);},650);}
+function match(txt){const n=norm(txt);for(const it of INTENTS)for(const kw of it.k)if(n.includes(norm(kw)))return it;return null;}
+function handle(text){add(text,'user');chipsEl.innerHTML='';typing();setTimeout(()=>{untype();const it=match(text);if(it){add(it.a,'bot');chips(it.c||START);}else{add(FALLBACK,'bot');chips(START);}},700);}
+function sendUser(){const v=input.value.trim();if(!v)return false;input.value='';handle(v);return false;}
+window.openBot=function(key){const p=document.getElementById('botPanel');p.classList.add('open');if(!started){started=true;greet();}setTimeout(()=>handle(key==='empresa'?'Plan Empresa':'Ver planes'),700);};
+</script>
+</body>
+</html>
