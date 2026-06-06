@@ -701,7 +701,7 @@ function handleLead(e){
   return false;
 }
 
-/* ===== SIRKO007 — Agente Secreto de Alberto Landa ===== */
+/* ===== SIRKO007 v2 — Asistente Conversacional ===== */
 (function(){
   'use strict';
   const CFG={
@@ -712,305 +712,261 @@ function handleLead(e){
     sEmpresa:"https://buy.stripe.com/8x200j7ITdbj0nz6CUaMU02",
     sMant:"https://buy.stripe.com/14A28rd3d6MVeep3qIaMU03"
   };
-  let mem={name:null,sector:null,lastTopic:null,count:0,diagStep:0,inDiag:false};
-  let started=false;
-
   const body=document.getElementById('s7Body');
   const chipsEl=document.getElementById('s7Chips');
-  const input=document.getElementById('s7Input');
+  const inp=document.getElementById('s7Input');
+  let started=false;
+  let ctx={name:null,sector:null,lastTopic:null,fbIdx:0,inDiag:false,diagStep:0,diagAnswers:[]};
 
+  /* helpers */
   function norm(s){return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');}
-
-  function planBtns(secret){
-    const lbl=secret?['🎯 Misión Básica','⭐ Misión Pro','💎 Misión Empresa']:['Básico','Profesional ⭐','Empresa'];
-    return `<div class="s7-plan-grid">
-      <a href="${CFG.sBasico}" target="_blank" rel="noopener" class="s7-plan-btn">
-        <span class="s7-plan-name">${lbl[0]}</span><span class="s7-plan-price">99€</span>
-      </a>
-      <a href="${CFG.sPro}" target="_blank" rel="noopener" class="s7-plan-btn feat">
-        <span class="s7-plan-badge">Más elegido</span>
-        <span class="s7-plan-name">${lbl[1]}</span><span class="s7-plan-price">299€</span>
-      </a>
-      <a href="${CFG.sEmpresa}" target="_blank" rel="noopener" class="s7-plan-btn">
-        <span class="s7-plan-name">${lbl[2]}</span><span class="s7-plan-price">599€</span>
-      </a>
-    </div>`;
+  function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+  function buyBtn(label,url,extra){
+    const st=extra||'background:var(--grad);color:#04201d';
+    return `<div style="margin-top:12px"><a href="${url}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:10px;${st};font-weight:700;font-size:13px;text-decoration:none">${label} →</a></div>`;
   }
-  function ctaBtns(){
-    return `<div class="s7-contact-row">
+  function cRow(){
+    return `<div class="s7-contact-row" style="margin-top:12px">
       <a href="${CFG.wa}" target="_blank" rel="noopener" class="s7-cta-wa">💬 WhatsApp</a>
-      <a href="${CFG.mail}" class="s7-cta-mail">📧 Email</a>
-    </div>`;
+      <a href="${CFG.mail}" class="s7-cta-mail">📧 Email</a></div>`;
   }
-  function stripeSingle(label,url){
-    return `<div style="margin-top:10px"><a href="${url}" target="_blank" rel="noopener" class="btn btn-primary" style="font-size:13px;padding:11px 18px;display:inline-flex">${label}</a></div>`;
+  function planGrid(){
+    return `<div class="s7-plan-grid">
+      <a href="${CFG.sBasico}" target="_blank" rel="noopener" class="s7-plan-btn"><span class="s7-plan-name">Básico</span><span class="s7-plan-price">99€</span></a>
+      <a href="${CFG.sPro}" target="_blank" rel="noopener" class="s7-plan-btn feat"><span class="s7-plan-badge">Más elegido</span><span class="s7-plan-name">Profesional</span><span class="s7-plan-price">299€</span></a>
+      <a href="${CFG.sEmpresa}" target="_blank" rel="noopener" class="s7-plan-btn"><span class="s7-plan-name">Empresa</span><span class="s7-plan-price">599€</span></a></div>`;
   }
 
-  const INTENTS=[
-    // SALUDOS
-    {k:["hola","hey","buenas","buenos dias","buenas tardes","saludos","ey","hi","hello","good morning"],
-     r:(m)=>`¡Hola${m.name?', '+m.name:''}! 👋 Soy <b>Sirko007</b>, el agente de inteligencia de <b>Alberto Landa</b>.<br><br>Puedo contarte sobre planes, precios, cómo funciona la IA para tu sector y resolver cualquier duda. ¿Por dónde empezamos?`,
-     c:["Ver planes y precios","¿Cómo funciona?","Demo gratis","¿Para qué sectores sirve?"]},
-    // NOMBRE
-    {k:["me llamo","mi nombre es","soy "],
-     special:"name",c:["Ver planes","¿Cómo funciona?","Quiero una demo"]},
-    // PLANES/PRECIOS
-    {k:["plan","planes","precio","precios","cuanto cuesta","cuesta","tarifa","cobras","cuanto vale","vale","oferta","opcion"],
-     r:()=>`🎯 <b>3 planes disponibles</b>, todos con análisis previo gratuito:<br><br>
-<b>Básico — 99€</b> · GPT funcional, listo en 48h. Para validar la idea con mínima inversión.<br>
-<b>Profesional — 299€ ⭐</b> · GPT a medida + web y WhatsApp + funciones avanzadas. El más elegido.<br>
-<b>Empresa — 599€</b> · Automatización completa, memoria profunda, soporte y reportes.<br><br>
-<b>Mantenimiento opcional: 29€/mes</b>`,
-     extra:"planBtns",c:["Quiero el Básico","Quiero el Profesional","Quiero el Empresa","¿Cuánto tarda?"]},
-    // BASICO
-    {k:["basico","básico","99","empezar","probar","mas barato","economico","barato"],
-     r:()=>`<b>Plan Básico — 99€</b> (pago único)<br><br>✅ GPT personalizado 100% funcional<br>✅ Entrega en 48 horas<br>✅ Análisis previo gratuito<br><br>Perfecto para validar la IA en tu negocio antes de una inversión mayor.`,
-     extra:"stripeBasico",c:["Ver todos los planes","¿Cuánto tarda?","Hablar con Alberto"]},
-    // PROFESIONAL
-    {k:["profesional","pro","299","popular","recomendado","elegido","pyme"],
-     r:()=>`<b>Plan Profesional — 299€</b> ⭐ <i>El más elegido</i><br><br>✅ GPT a medida con tu tono de marca<br>✅ Integración web <b>y</b> WhatsApp Business<br>✅ Ajustes de personalidad y estilo<br>✅ Funcionalidades avanzadas<br><br>El equilibrio perfecto calidad/precio para pymes.`,
-     extra:"stripePro",c:["Ver todos los planes","Plan Empresa","Hablar con Alberto"]},
-    // EMPRESA
-    {k:["empresa","599","completo","premium","avanzado","grande","corporativo"],
-     r:()=>`<b>Plan Empresa — 599€</b><br><br>✅ Automatización avanzada<br>✅ Memoria profunda y contextual<br>✅ Conexión con tu documentación interna<br>✅ Soporte continuo + reportes mensuales<br><br>Para negocios que quieren la solución completa sin compromisos.`,
-     extra:"stripeEmpresa",c:["Ver todos los planes","Añadir mantenimiento","Hablar con Alberto"]},
-    // MANTENIMIENTO
-    {k:["mantenimiento","mensual","29","actualiza","soporte mensual"],
-     r:()=>`🔧 <b>Mantenimiento — 29€/mes</b> (opcional)<br><br>✅ Soporte directo con Alberto<br>✅ Actualizaciones y mejoras del GPT<br>✅ Optimización continua con datos reales de uso<br><br>Compatible con cualquier plan. Cancela cuando quieras.`,
-     extra:"stripeMant",c:["Ver planes","Hablar con Alberto"]},
-    // TIEMPO
-    {k:["tarda","tiempo","cuanto","rapido","plazo","48","cuando estara"],
-     r:()=>`⚡ <b>48 horas</b> desde que te pido la información de tu negocio.<br><br>El proceso:<br>1️⃣ Análisis rápido (20 min gratis)<br>2️⃣ Entrenamiento personalizado del GPT<br>3️⃣ Integración en tu web/WhatsApp<br>4️⃣ Pruebas y entrega final<br><br>Fin de semana incluido.`,
-     c:["Ver planes","¿Cómo funciona?","Quiero una demo"]},
-    // COMO FUNCIONA
-    {k:["como funciona","funciona","proceso","pasos","explica","metodologia","como se hace"],
-     r:()=>`🔍 <b>4 pasos para tener tu asistente:</b><br><br>
-<b>1. Análisis previo</b> — 20 min gratis. Detectamos exactamente qué automatizar.<br>
-<b>2. Entrenamiento</b> — Configuro el GPT con tu info, catálogo y tono.<br>
-<b>3. Integración en 48h</b> — Web y/o WhatsApp, probado y listo para recibir clientes.<br>
-<b>4. Optimización</b> — Mejoras continuas con datos reales.`,
-     c:["Ver planes","¿Cuánto tarda?","Quiero una demo"]},
-    // INTEGRACION
-    {k:["integra","whatsapp","web","pagina","canal","donde","plataforma","donde funciona"],
-     r:()=>`📱 <b>Canales disponibles:</b><br><br>🌐 <b>Página web</b> — Embebido como widget de chat<br>💬 <b>WhatsApp Business</b> — Responde en tu número de empresa<br><br>Me encargo de toda la configuración técnica. Tú no tocas nada.`,
-     c:["Ver planes","¿Cuánto tarda?","Quiero una demo"]},
-    // SEGURIDAD
-    {k:["seguro","seguridad","datos","privacidad","rgpd","gdpr","protec","confiden","gdpr"],
-     r:()=>`🔒 <b>Seguridad garantizada:</b><br><br>✅ Conforme al RGPD europeo<br>✅ Tus datos no se comparten ni venden<br>✅ Comunicaciones cifradas end-to-end<br>✅ Puedes auditar el contenido del GPT en cualquier momento<br><br>La privacidad de tus clientes, protegida.`,
-     c:["Ver planes","¿Cómo funciona?","Quiero una demo"]},
-    // SECTORES
-    {k:["sector","sectores","para quien","para que negocio","tipo de negocio","que negocios","que empresas"],
-     r:()=>`🎯 <b>Funciona especialmente bien en:</b><br><br>🏥 Clínicas y consultas médicas<br>💆 Centros de bienestar y masajes<br>🦴 Fisioterapeutas<br>🛒 E-commerce<br>📚 Academias y formación<br>🍽️ Hostelería y restaurantes<br>⚡ Autónomos y consultores<br><br>¿A qué sector pertenece tu negocio?`,
-     c:["Centro de bienestar","Clínica / Fisio","Autónomo","E-commerce","Otro sector"]},
-    // BIENESTAR
-    {k:["bienestar","masaje","spa","quiromasaje","relajacion","wellness"],
-     r:(m)=>{if(m)m.sector='bienestar';return `💆 <b>IA para centros de bienestar:</b><br><br>✅ Gestión de reservas y disponibilidad 24/7<br>✅ Preguntas sobre tratamientos y precios<br>✅ Venta de bonos y packs por WhatsApp<br>✅ Recordatorios de cita automáticos<br><br><i>Resultado típico: +40% de citas en horario no laboral.</i>`;},
-     c:["Ver planes","Quiero una demo","¿Cuánto tarda?"]},
-    // FISIO
-    {k:["fisio","fisioterapeuta","fisioterapia","rehabilita"],
-     r:(m)=>{if(m)m.sector='fisio';return `🦴 <b>IA para fisioterapeutas:</b><br><br>✅ Responde las 20 preguntas más frecuentes<br>✅ Gestión de agenda y primeras citas<br>✅ Información sobre tratamientos y seguros<br><br><i>Resultado típico: -70% de consultas repetitivas manuales.</i>`;},
-     c:["Ver planes","Quiero una demo","¿Cuánto tarda?"]},
-    // CLINICA
-    {k:["clinica","dental","dentista","medico","consulta medica","pediatra","dermato","clinica dental"],
-     r:(m)=>{if(m)m.sector='clinica';return `🏥 <b>IA para clínicas y consultas:</b><br><br>✅ Precios de tratamientos al instante<br>✅ Gestión de citas y listas de espera<br>✅ Derivación de urgencias al personal<br>✅ Disponible en web y WhatsApp Business<br><br>Los pacientes obtienen respuesta en segundos, sin saturar a recepción.`;},
-     c:["Ver planes","Quiero una demo","¿Cuánto tarda?"]},
-    // AUTONOMO
-    {k:["autonomo","freelance","independiente","consultor","profesional independiente"],
-     r:(m)=>{if(m)m.sector='autonomo';return `⚡ <b>IA para autónomos:</b><br><br>✅ Responde consultas mientras trabajas<br>✅ Filtra y cualifica clientes potenciales<br>✅ Presenta tus servicios y tarifas<br>✅ Agenda reuniones automáticamente<br><br>Tú te concentras en trabajar. Él se encarga del primer contacto.`;},
-     c:["Ver planes","Quiero una demo","Plan recomendado para mí"]},
-    // OBJECION PRECIO
-    {k:["caro","mucho","costoso","no puedo","no me llega","sin presupuesto","economico","asequible"],
-     r:()=>`💡 Entiendo. Veamos los números:<br><br><b>Plan Básico: 99€ (una sola vez)</b><br>Si atiende solo 5 consultas/día fuera de horario → 150 conversaciones/mes.<br>Si convierte el 10% → 15 nuevas oportunidades al mes.<br><br>¿Cuánto vale una venta para tu negocio? La mayoría recupera la inversión en 2 semanas.`,
-     extra:"stripeBasico",c:["Ver todos los planes","Hablar con Alberto","Quiero una demo"]},
-    // DUDAS
-    {k:["no se","duda","dudas","no me convence","inseguro","no confio","riesgo","si funcionara","funcionara"],
-     r:()=>`Totalmente normal tener dudas 🙂<br><br>Por eso ofrezco una <b>demo completamente gratuita</b>: te muestro un asistente configurado con <b>tu propio negocio</b> antes de que pagues ni un euro.<br><br>No hay riesgo ninguno. Si no te convence, simplemente no contratas.`,
-     c:["Quiero la demo gratis","¿Cómo funciona?","Hablar con Alberto"]},
-    // SOBRE ALBERTO
-    {k:["quien es alberto","quien eres","sobre alberto","sobre ti","quien te creo","creador","fundador","el humano"],
-     r:()=>`🕵️ <b>Alberto Landa</b> — el cerebro detrás de esta operación.<br><br>Consultor especializado en IA para pequeños negocios. Su filosofía: la tecnología debe ser práctica y accesible.<br><br>✅ Trabaja directamente contigo, sin intermediarios<br>✅ Especializado en negocios locales y autónomos<br>✅ Implementaciones en 48h, sin tecnicismos<br>✅ +50 automatizaciones desplegadas`,
-     c:["Ver planes","Quiero una demo","¿Cómo funciona?"]},
-    // DIAGNOSTICO
-    {k:["cual me recomiendas","que plan","diagnostico","recomiendame","que necesito","por donde empiezo","no se que plan elegir","ayuda a elegir"],
-     special:"diag",c:[]},
-    // COMPARATIVA
-    {k:["diferencia","comparar","comparativa","versus","vs","mejor plan","cual es mejor","elegir entre"],
-     r:()=>`📊 <b>Comparativa rápida:</b><table class="s7-table"><tr><th>Característica</th><th>Básico</th><th>Pro ⭐</th><th>Empresa</th></tr><tr><td>Precio</td><td>99€</td><td>299€</td><td>599€</td></tr><tr><td>GPT personalizado</td><td>✅</td><td>✅</td><td>✅</td></tr><tr><td>Web + WhatsApp</td><td>Solo web</td><td>✅ Ambos</td><td>✅ Ambos</td></tr><tr><td>Funciones avanzadas</td><td>—</td><td>✅</td><td>✅</td></tr><tr><td>Memoria profunda</td><td>—</td><td>—</td><td>✅</td></tr><tr><td>Reportes mensuales</td><td>—</td><td>—</td><td>✅</td></tr></table>`,
-     extra:"planBtns",c:["Quiero el Profesional","Hablar con Alberto"]},
-    // CONTRATAR/DEMO
-    {k:["contratar","quiero contratar","me interesa","pagar","comprar","quiero empezar","demo gratis","quiero la demo","demo","presupuesto","contacto","contactar","hablar","hablar con alberto","hablar con el humano"],
-     r:(m)=>`¡Excelente decisión${m.name?', '+m.name:''}! 🎯<br><br>La <b>demo es totalmente gratis</b>: Alberto te muestra un asistente configurado con tu negocio real, sin pagar nada.<br><br>Elige cómo contactar:`,
-     extra:"ctaBtns",c:["Ver planes","¿Cómo funciona?"]},
-    // IDIOMAS
-    {k:["idioma","idiomas","ingles","frances","aleman","multilingue","lengua","traduccion"],
-     r:()=>`🌍 <b>Multilingüe por defecto:</b><br><br>Español, inglés, francés, alemán, portugués, italiano y más.<br><br>Configurable: puede responder solo en el idioma que prefieras o detectar automáticamente el idioma del cliente.`,
-     c:["Ver planes","Quiero una demo"]},
-    // SUSTITUCION
-    {k:["sustitu","empleado","despedir","reemplaz","personal","trabajo humano"],
-     r:()=>`No sustituye a tu equipo 😊<br><br><b>El asistente se encarga de lo repetitivo</b> para que tus personas dediquen su tiempo a lo que de verdad aporta: vender, asesorar, cuidar al cliente.<br><br>Es un compañero de trabajo, no un competidor.`,
-     c:["¿Cómo funciona?","Ver planes","Quiero una demo"]},
-    // EASTER EGG
-    {k:["007","codigo secreto","mision","agente secreto","sirko","sirko007","acceso clasificado","clave secreta"],
-     r:(m)=>`🕵️‍♂️ <b>[ACCESO CLASIFICADO DESBLOQUEADO]</b><br><br>Bienvenido al núcleo de operaciones de <b>Sirko007</b>.<br><br>━━━━━━━━━━━━━━━━━━━━<br>Agente: ${m.name||'Desconocido'}<br>Misión: Transformar tu negocio con IA<br>Estado: ACTIVO ✅<br>Amenaza a la competencia: MÁXIMA 🔴<br>━━━━━━━━━━━━━━━━━━━━<br><br>¿Elegimos tu módulo de despliegue, agente?`,
-     extra:"planBtnsSecret",c:["🎯 Misión Básica — 99€","⭐ Misión Pro — 299€","💎 Misión Empresa — 599€"]},
-    // GRACIAS
-    {k:["gracias","thank","genial","perfecto","ok vale","excelente","de nada","muy bien","guay"],
-     r:(m)=>`¡A ti${m.name?', '+m.name:''}! 😊<br><br>Sirko007 permanece en alerta por si tienes más preguntas. La <b>demo gratis</b> sigue disponible cuando decidas dar el paso.`,
-     c:["Ver planes","Quiero la demo gratis","¿Cómo funciona?"]}
+  /* KNOWLEDGE BASE */
+  const KB=[
+    {id:'greeting',w:2,
+     k:['hola','hey','buenas','buenos dias','buenos días','buenas tardes','buenas noches','saludos','ey','hi','hello','que tal','qué tal','como estas','cómo estás'],
+     r:()=>pick([
+       `¡Hola${ctx.name?', '+ctx.name:''}! 👋 Soy <b>Sirko007</b>, el asistente de <b>Alberto Landa</b>.<br><br>Puedo resolver cualquier duda sobre los asistentes IA para tu negocio — precios, cómo funciona, plazos, sectores... Escríbeme directamente lo que necesitas saber.`,
+       `¡Hola${ctx.name?', '+ctx.name:''}! 😊 Soy Sirko007, el asistente de Alberto. Estoy aquí para responder cualquier pregunta sobre IA para negocios sin rodeos. ¿Qué quieres saber?`
+     ])},
+    {id:'precios',w:2,
+     k:['plan','planes','precio','precios','cuanto cuesta','cuánto cuesta','cuanto vale','cuánto vale','tarifa','tarifas','cobras','cuánto cobras','cuanto cobras','cuesta','coste','cuanto es','cuánto es','oferta','opciones','presupuesto','inversión','inversion','pago'],
+     r:()=>`🎯 Hay <b>3 planes</b>, todos incluyen análisis previo gratuito:<br><br><b>Básico — 99€</b> (pago único)<br>GPT funcional listo en 48h. Para empezar con mínima inversión.<br><br><b>Profesional — 299€</b> ⭐ <i>El más elegido</i><br>GPT a medida + integración web y WhatsApp Business.<br><br><b>Empresa — 599€</b><br>Automatización completa, memoria avanzada, soporte y reportes.<br><br><b>Mantenimiento: 29€/mes</b> opcional, sin permanencia.<br><br>¿Quieres más detalle sobre alguno?${planGrid()}`},
+    {id:'basico',w:2,
+     k:['plan basico','plan básico','básico','basico','99€','empezar','probar','mas barato','más barato','economico','económico','barato','mínima inversión','minima inversion'],
+     r:()=>`<b>Plan Básico — 99€</b> (pago único)<br><br>✅ GPT personalizado 100% funcional<br>✅ Entrenado con la información de tu negocio<br>✅ Integración en tu página web<br>✅ Entrega garantizada en 48 horas<br>✅ Análisis previo gratuito incluido<br><br>Ideal para validar la IA antes de escalar.${buyBtn('Contratar Plan Básico — 99€',CFG.sBasico)}`},
+    {id:'pro',w:2,
+     k:['plan profesional','profesional','pro','299€','más elegido','mas elegido','popular','recomendado','pyme','web y whatsapp'],
+     r:()=>`<b>Plan Profesional — 299€</b> ⭐ <i>El más contratado</i><br><br>✅ GPT completamente personalizado con tu tono de marca<br>✅ Integración en web <b>y</b> WhatsApp Business<br>✅ Funcionalidades avanzadas (reservas, catálogo, FAQs)<br>✅ Ajustes de personalidad y estilo conversacional<br>✅ Entrega en 48h<br><br>El equilibrio ideal entre potencia y precio.${buyBtn('Contratar Plan Profesional — 299€',CFG.sPro)}`},
+    {id:'empresa',w:2,
+     k:['plan empresa','empresa','599€','completo','premium','avanzado','grande','corporativo','memoria profunda','reportes','automatización completa','automatizacion completa'],
+     r:()=>`<b>Plan Empresa — 599€</b><br><br>✅ Automatización avanzada de flujos completos<br>✅ Memoria profunda y contextual entre conversaciones<br>✅ Conexión con tu documentación interna<br>✅ Soporte continuo y reportes mensuales de uso<br>✅ Máxima personalización<br><br>Para negocios que quieren exprimir al máximo la IA.${buyBtn('Contratar Plan Empresa — 599€',CFG.sEmpresa)}`},
+    {id:'mant',w:2,
+     k:['mantenimiento','mensual','29€','soporte mensual','actualiza','actualizaciones','optimizar','optimización','mejoras continuas'],
+     r:()=>`🔧 <b>Mantenimiento — 29€/mes</b> (opcional)<br><br>✅ Soporte directo con Alberto<br>✅ Actualizaciones y mejoras continuas del GPT<br>✅ Optimización basada en datos reales de uso<br>✅ Sin permanencia — cancela cuando quieras<br><br>Compatible con cualquier plan.${buyBtn('Añadir Mantenimiento — 29€/mes',CFG.sMant,'background:rgba(45,212,191,.15);border:1px solid rgba(45,212,191,.4);color:var(--teal)')}`},
+    {id:'tiempo',w:2,
+     k:['cuánto tarda','cuanto tarda','plazo','rápido','rapido','cuánto tiempo','cuanto tiempo','48 horas','cuando estará','cuando estara','urgente','rapidez','velocidad','en qué tiempo','en que tiempo'],
+     r:()=>pick([
+       `⚡ El plazo estándar es <b>48 horas</b> desde que recibes la info inicial.<br><br>El proceso:<br>1️⃣ Análisis previo gratuito (20 min)<br>2️⃣ Envías la info de tu negocio<br>3️⃣ Alberto entrena e integra el GPT<br>4️⃣ Pruebas y entrega<br><br>Fin de semana incluido. ¿Tienes una fecha límite?`,
+       `⚡ <b>48 horas</b> desde que se recibe la información del negocio. Eso incluye el entrenamiento, la integración técnica y las pruebas. Si necesitas algo más urgente, cuéntame y lo vemos.`
+     ])},
+    {id:'proceso',w:2,
+     k:['cómo funciona','como funciona','proceso','pasos','metodología','metodologia','cómo se hace','como se hace','cómo trabaja','como trabaja','explícame','explicame','en qué consiste','en que consiste'],
+     r:()=>`🔍 <b>El proceso completo:</b><br><br><b>1. Análisis previo (gratis)</b><br>20 min para entender tu negocio y detectar qué automatizar.<br><br><b>2. Entrenamiento del GPT</b><br>Alberto configura el asistente con tu catálogo, FAQs, tono de marca y reglas.<br><br><b>3. Integración en 48h</b><br>Se instala en tu web y/o WhatsApp Business. Tú no tocas nada técnico.<br><br><b>4. Pruebas y optimización</b><br>Pruebas antes de la entrega y mejoras continuas con datos reales.<br><br>¿Sobre qué fase quieres saber más?`},
+    {id:'integracion',w:2,
+     k:['integración','integracion','integra','whatsapp business','página web','pagina web','canal','dónde funciona','donde funciona','dónde se instala','donde se instala','plataforma','dónde puedo usarlo','donde puedo usarlo'],
+     r:()=>`📱 <b>Canales disponibles:</b><br><br>🌐 <b>Página web</b> — Widget de chat embebido en cualquier página<br>💬 <b>WhatsApp Business</b> — Responde automáticamente en tu número de empresa<br><br>Los planes Profesional y Empresa incluyen <b>ambos canales</b>. El Básico incluye solo web.<br><br>Alberto gestiona toda la configuración técnica — tú no tocas nada.`},
+    {id:'seguridad',w:2,
+     k:['seguro','seguridad','privacidad','datos','rgpd','gdpr','protección','proteccion','confidencial','mis datos','datos de clientes'],
+     r:()=>`🔒 <b>Privacidad y seguridad:</b><br><br>✅ Cumple el RGPD europeo<br>✅ Los datos de tus clientes <b>no se comparten</b> con terceros ni se venden<br>✅ Comunicaciones cifradas<br>✅ Puedes auditar y modificar el contenido del GPT en cualquier momento`},
+    {id:'sectores',w:2,
+     k:['sector','sectores','para quién','para quien','qué negocio','que negocio','tipos de negocio','qué empresas','que empresas','para qué sirve','para que sirve','a quién va','a quien va'],
+     r:()=>`🎯 <b>Funciona muy bien en estos sectores:</b><br><br>🏥 <b>Clínicas y consultas</b> — citas, preguntas frecuentes, urgencias<br>💆 <b>Bienestar y spas</b> — reservas, tratamientos, bonos<br>🦴 <b>Fisioterapeutas</b> — agenda, FAQs, seguros<br>🛒 <b>E-commerce</b> — pedidos, devoluciones, recomendaciones<br>📚 <b>Academias</b> — inscripciones, horarios, dudas<br>⚡ <b>Autónomos</b> — leads, agenda, presentación de servicios<br>🍽️ <b>Hostelería</b> — reservas, carta, eventos<br><br>¿En qué sector trabajas? Te cuento el caso de uso concreto.`},
+    {id:'bienestar',w:2,
+     k:['bienestar','masaje','masajes','spa','quiromasaje','relajación','relajacion','wellness','belleza','estética','estetica','centro de bienestar'],
+     r:()=>{ctx.sector='bienestar';return `💆 <b>IA para centros de bienestar:</b><br><br>✅ Gestión de reservas y disponibilidad 24/7<br>✅ Responde sobre tratamientos y precios al instante<br>✅ Venta de bonos y packs por WhatsApp en horario no laboral<br>✅ Recordatorios de cita automáticos<br>✅ Responde en varios idiomas para clientela turista<br><br><i>Resultado típico: +40% de citas gestionadas fuera del horario de atención.</i>`;}},
+    {id:'fisio',w:2,
+     k:['fisio','fisioterapeuta','fisioterapia','rehabilitación','rehabilitacion','kinesio','osteopata','osteópata'],
+     r:()=>{ctx.sector='fisio';return `🦴 <b>IA para fisioterapeutas:</b><br><br>✅ Responde las preguntas más frecuentes de pacientes<br>✅ Gestiona agenda y primeras citas<br>✅ Informa sobre tratamientos, sesiones y seguros médicos<br>✅ Diferencia automáticamente lo urgente de lo que puede esperar<br><br><i>Resultado típico: -70% de consultas repetitivas gestionadas a mano.</i>`;}},
+    {id:'clinica',w:2,
+     k:['clínica','clinica','dental','dentista','médico','medico','consulta médica','consulta medica','pediatra','dermatólogo','dermatologo','oftalmología','psicólogo','psicologo','terapeuta'],
+     r:()=>{ctx.sector='clinica';return `🏥 <b>IA para clínicas y consultas:</b><br><br>✅ Informa sobre tratamientos y precios al instante<br>✅ Gestiona citas y listas de espera<br>✅ Deriva urgencias reales al personal de guardia<br>✅ Disponible en web y WhatsApp Business<br>✅ Reduce la saturación de recepción hasta un 60%<br><br>Los pacientes obtienen respuesta en segundos, sin esperas.`;}},
+    {id:'autonomo',w:2,
+     k:['autónomo','autonomo','freelance','independiente','consultor','consultoría','consultoria','profesional independiente','trabajo solo','por cuenta propia'],
+     r:()=>{ctx.sector='autonomo';return `⚡ <b>IA para autónomos y consultores:</b><br><br>✅ Responde consultas mientras trabajas o estás desconectado<br>✅ Filtra y cualifica clientes potenciales antes de que lleguen a ti<br>✅ Presenta tus servicios y tarifas de forma consistente<br>✅ Agenda reuniones automáticamente<br><br>Tú te concentras en entregar valor. El asistente gestiona el primer contacto.`;}},
+    {id:'comparativa',w:2,
+     k:['diferencia','diferencias','comparar','comparativa','versus','vs','cuál es mejor','cual es mejor','cómo elijo','como elijo','cuál elegir','cual elegir','qué plan elijo','que plan elijo'],
+     r:()=>`📊 <b>Comparativa rápida:</b><table class="s7-table"><tr><th>Característica</th><th>Básico</th><th>Pro ⭐</th><th>Empresa</th></tr><tr><td>Precio</td><td>99€</td><td>299€</td><td>599€</td></tr><tr><td>GPT personalizado</td><td>✅</td><td>✅</td><td>✅</td></tr><tr><td>Página web</td><td>✅</td><td>✅</td><td>✅</td></tr><tr><td>WhatsApp Business</td><td>—</td><td>✅</td><td>✅</td></tr><tr><td>Funciones avanzadas</td><td>—</td><td>✅</td><td>✅</td></tr><tr><td>Memoria profunda</td><td>—</td><td>—</td><td>✅</td></tr><tr><td>Reportes mensuales</td><td>—</td><td>—</td><td>✅</td></tr></table>${planGrid()}`},
+    {id:'objecion',w:2,
+     k:['caro','muy caro','demasiado','costoso','no puedo','no me llega','sin presupuesto','asequible','descuento','más barato','mas barato','rebaja','poco presupuesto'],
+     r:()=>`Entiendo perfectamente 🙂 Hagamos números:<br><br><b>Plan Básico (99€, una sola vez)</b><br>Si gestiona 5 consultas al día fuera de horario → 150 al mes.<br>Si convierte el 10% → <b>15 nuevas oportunidades de negocio al mes</b>.<br><br>¿Cuánto vale para ti una venta nueva? La mayoría recupera la inversión en <b>menos de 2 semanas</b>.<br><br>Y la demo es completamente gratuita — no pagas nada hasta verlo funcionar con tu negocio.${buyBtn('Empezar con el Plan Básico — 99€',CFG.sBasico)}`},
+    {id:'duda',w:2,
+     k:['no sé','no se','duda','dudas','no me convence','inseguro','insegura','no confío','no confio','riesgo','funciona de verdad','garantía','garantia','sin riesgo'],
+     r:()=>pick([
+       `Totalmente comprensible 🙂<br><br>Por eso la demo es <b>100% gratuita y sin compromiso</b>: Alberto configura un asistente con la información real de <b>tu</b> negocio y te lo muestra antes de que pagues nada.<br><br>Si no te convence, no contratas. Así de simple. ¿Qué duda concreta tienes?`,
+       `Es normal querer estar seguro antes de invertir. Por eso existe la <b>demo gratuita</b>: ves el asistente funcionando con tu propio negocio antes de decidir.<br><br>Alberto ha hecho más de 50 implementaciones — puedes pedirle referencias si lo necesitas.`
+     ])},
+    {id:'resultados',w:2,
+     k:['resultado','resultados','roi','retorno','vale la pena','merece la pena','beneficio','beneficios','mejora','impacto','casos reales','testimonios','éxito','exito'],
+     r:()=>`📈 <b>Resultados documentados:</b><br><br>🏥 <b>Clínicas:</b> -60% de llamadas repetitivas a recepción<br>💆 <b>Bienestar:</b> +40% de reservas fuera del horario de oficina<br>🦴 <b>Fisios:</b> -70% de consultas repetitivas manuales<br>⚡ <b>Autónomos:</b> leads cualificados 24/7 sin coste adicional<br><br>El análisis previo gratuito incluye una estimación del impacto concreto para tu negocio antes de contratar.`},
+    {id:'alberto',w:2,
+     k:['quién es alberto','quien es alberto','sobre alberto','sobre ti','quién eres','quien eres','quién te creó','quien te creo','creador','fundador','el humano','la persona detrás','experiencia','trayectoria','alberto landa'],
+     r:()=>`🕵️ <b>Alberto Landa</b> — consultor especializado en IA para pequeños negocios.<br><br>✅ Trabaja directamente con cada cliente, sin intermediarios<br>✅ +50 automatizaciones e implementaciones realizadas<br>✅ Especializado en negocios locales y autónomos en España<br>✅ Entrega en 48h, sin tecnicismos para el cliente<br>✅ Filosofía: la tecnología debe ser práctica y accesible, no intimidante`},
+    {id:'idiomas',w:2,
+     k:['idioma','idiomas','inglés','ingles','francés','frances','alemán','aleman','multilingüe','multilingue','varios idiomas','habla inglés','habla ingles','traducción','traduccion'],
+     r:()=>`🌍 <b>Multilingüe por defecto:</b><br><br>El asistente responde en español, inglés, francés, alemán, portugués, italiano y más.<br><br>Configurable según tu negocio: solo en el idioma que prefieras o con detección automática del idioma del cliente. Muy útil para negocios con clientela turista o internacional.`},
+    {id:'sustitucion',w:2,
+     k:['sustituir','sustitu','empleado','empleados','despedir','reemplazar','personal','trabajo humano','quitará trabajo','quita trabajo'],
+     r:()=>`No te preocupes 😊 El asistente <b>no sustituye a las personas</b>.<br><br>Se encarga de lo repetitivo — responder las mismas preguntas, gestionar reservas básicas, dar información de precios — para que <b>tú y tu equipo puedan dedicar el tiempo a lo que de verdad aporta valor</b>: vender, asesorar y cuidar al cliente.`},
+    {id:'demo',w:2,
+     k:['contratar','quiero contratar','me interesa','pagar','comprar','quiero empezar','demo gratis','quiero la demo','demo','solicitar','empezar','comenzar','contacto','contactar','hablar','hablar con alberto','reunión','reunion','llamada','llamar'],
+     r:()=>pick([
+       `¡Perfecto${ctx.name?', '+ctx.name:''}! 🎯<br><br>La <b>demo es completamente gratuita</b>: Alberto configura un asistente con los datos reales de tu negocio para que veas exactamente cómo quedaría. Sin pagar nada, sin compromiso.<br><br>¿Cómo prefieres contactar?${cRow()}`,
+       `Estupendo${ctx.name?', '+ctx.name:''}! 🎯<br><br>La demo no tiene coste y Alberto la hace con información real de tu negocio. Puedes escribirle ahora:${cRow()}`
+     ])},
+    {id:'easteregg',w:3,
+     k:['007','código secreto','codigo secreto','misión imposible','mision imposible','agente secreto','sirko','sirko007','acceso clasificado','clave secreta'],
+     r:()=>`🕵️‍♂️ <b>[ACCESO CLASIFICADO DESBLOQUEADO]</b><br><br>Bienvenido al núcleo de operaciones de <b>Sirko007</b>.<br><br>━━━━━━━━━━━━━━━━━━━━<br>Agente: ${ctx.name||'Desconocido'}<br>Misión: Transformar tu negocio con IA<br>Estado: ACTIVO ✅<br>Amenaza a la competencia: MÁXIMA 🔴<br>━━━━━━━━━━━━━━━━━━━━<br><br>¿Elegimos tu módulo de despliegue, agente?${planGrid()}`},
+    {id:'gracias',w:2,
+     k:['gracias','muchas gracias','genial','perfecto','muy bien','guay','excelente','increíble','increible','muy útil','muy util','thanks'],
+     r:()=>pick([
+       `¡A ti${ctx.name?', '+ctx.name:''}! 😊 Pregunta lo que necesites.`,
+       `Con mucho gusto${ctx.name?', '+ctx.name:''}! 🤝 Si tienes más dudas, aquí estaré.`
+     ])},
+    {id:'diagnostico',w:2,
+     k:['cuál me recomiendas','cual me recomiendas','qué plan','que plan','diagnóstico','diagnostico','recomiéndame','recomiendame','qué necesito','que necesito','por dónde empiezo','por donde empiezo','no sé qué plan','no se que plan','ayuda a elegir'],
+     special:'diag'}
   ];
 
-  const DIAG_STEPS=[
-    {q:`🔍 <b>Diagnóstico de misión activado</b>.<br>3 preguntas rápidas para recomendarte el plan ideal.<br><br><b>1/3 · Sector:</b> ¿En qué tipo de negocio trabajas?`,
-     chips:["Salud / Clínicas","Bienestar / Masajes","Fisioterapia","E-commerce","Autónomo / Consultor","Otro"]},
-    {q:`<b>2/3 · Objetivo:</b> ¿Qué quieres conseguir principalmente?`,
-     chips:["Atender consultas 24/7","Gestionar citas y reservas","Vender productos/servicios","Cualificar leads","Todo a la vez"]},
-    {q:`<b>3/3 · Presupuesto:</b> ¿Con qué rango te manejas?`,
-     chips:["Menos de 150€","150€ – 400€","Más de 400€","No lo tengo claro"]}
+  /* DIAGNOSTIC FLOW */
+  const DIAG=[
+    {q:`🔍 <b>Vamos a encontrar el plan ideal para ti</b> con 3 preguntas rápidas.<br><br><b>1/3 · ¿En qué tipo de negocio trabajas?</b>`,
+     c:['Salud / Clínicas','Bienestar / Masajes','Fisioterapia','E-commerce','Autónomo / Consultor','Otro']},
+    {q:`<b>2/3 · ¿Cuál es tu objetivo principal?</b>`,
+     c:['Atender consultas 24/7','Gestionar citas y reservas','Vender productos/servicios','Cualificar clientes potenciales','Todo a la vez']},
+    {q:`<b>3/3 · ¿Con qué presupuesto cuentas?</b>`,
+     c:['Hasta 150€','150€ – 400€','Más de 400€','No lo tengo claro aún']}
   ];
-  const DIAG_ANSWERS=[];
-
-  function diagRecommend(){
-    const budget=DIAG_ANSWERS[2]||'';
-    if(budget.includes('Menos'))return{plan:'Básico',url:CFG.sBasico,price:'99€',why:'Con una inversión mínima validas la IA en tu negocio y puedes escalar después.'};
-    if(budget.includes('400')||budget.includes('Todo'))return{plan:'Empresa',url:CFG.sEmpresa,price:'599€',why:'Tienes presupuesto para la solución completa con automatización avanzada y soporte.'};
-    return{plan:'Profesional',url:CFG.sPro,price:'299€',why:'Es el equilibrio ideal: GPT a medida + web y WhatsApp + funciones avanzadas.'};
+  function diagRec(){
+    const b=ctx.diagAnswers[2]||'';
+    if(b.includes('150'))return{plan:'Básico',url:CFG.sBasico,price:'99€',why:'Con mínima inversión validas la IA en tu negocio y puedes escalar después.'};
+    if(b.includes('400')||b.includes('Todo'))return{plan:'Empresa',url:CFG.sEmpresa,price:'599€',why:'Tienes presupuesto para la solución completa con automatización avanzada.'};
+    return{plan:'Profesional',url:CFG.sPro,price:'299€',why:'El equilibrio perfecto: GPT a medida, web y WhatsApp, funciones avanzadas.'};
   }
 
+  /* MATCHING — scoring por peso y longitud de keyword */
+  function scoreKB(q,e){
+    const n=norm(q);let s=0;
+    for(const k of e.k){if(n.includes(norm(k)))s+=k.split(' ').length*(e.w||1);}
+    return s;
+  }
+  function findIntent(q){
+    let best=null,bs=0;
+    for(const e of KB){
+      if(e.special==='name')continue;
+      const s=scoreKB(q,e);
+      if(s>bs){best=e;bs=s;}
+    }
+    return bs>=1?best:null;
+  }
+  function extractName(txt){
+    const n=norm(txt);
+    const pp=[/me llamo ([a-záéíóúñü]+)/,/mi nombre es ([a-záéíóúñü]+)/,/^soy ([a-záéíóúñü]+)$/,/llámame ([a-záéíóúñü]+)/,/llamame ([a-záéíóúñü]+)/];
+    for(const p of pp){const m=n.match(p);if(m)return m[1].charAt(0).toUpperCase()+m[1].slice(1);}
+    return null;
+  }
+
+  /* FALLBACK INTELIGENTE — responde siempre con valor */
+  function fallback(q){
+    const n=norm(q);
+    if(/precio|cuest|val|caro|barato|cuanto|tarifa|cobra|dinero|euro|€|inversion|presupuesto/.test(n))
+      return `Los servicios arrancan en <b>99€</b> (Plan Básico, pago único). También hay Profesional a <b>299€</b> y Empresa a <b>599€</b>. El mantenimiento es opcional, <b>29€/mes</b>. ¿Quieres que te explique qué incluye cada uno?`;
+    if(/tarda|plazo|cuand|rapido|tiempo|dias|horas|semana|urgente/.test(n))
+      return `El plazo estándar es <b>48 horas</b> desde que se recibe la info del negocio. Incluye entrenamiento, integración y pruebas. ¿Tienes una fecha límite concreta?`;
+    if(/como|funciona|proceso|paso|metodologia|hacer|trabaja|explicar|instala/.test(n))
+      return `El proceso es: análisis previo gratuito (20 min) → entrenamiento del GPT con tus datos → integración en web y/o WhatsApp → entrega en 48h. Tú no tocas nada técnico. ¿Quieres más detalle de alguna fase?`;
+    if(/resultado|exito|mejora|beneficio|roi|retorno|vale la pena|merece/.test(n))
+      return `Los resultados más comunes: +40% reservas fuera de horario en bienestar, -60% llamadas repetitivas en clínicas, -70% consultas manuales en fisios. El análisis previo gratuito incluye una estimación del impacto para tu negocio concreto.`;
+    if(/inteligencia artificial|ia|gpt|chatgpt|openai|llm|bot|chatbot|asistente|robot/.test(n))
+      return `Los asistentes IA que implementa Alberto son GPTs personalizados entrenados con la información específica de tu negocio — precios, catálogo, FAQs, tono de marca. Se integran en tu web y/o WhatsApp y atienden clientes 24/7. ¿Quieres saber más sobre algún aspecto concreto?`;
+    if(/por que|para que|ventaja|ventajas|diferencia|vs|versus/.test(n))
+      return `La ventaja principal es automatizar lo repetitivo para centrarte en lo que genera valor. Con 99€ (inversión única), la mayoría recupera el coste en menos de 2 semanas. ¿Quieres que te haga los números para tu caso?`;
+    if(/hablar|contactar|alberto|persona|human|reunion|llamar|telefono/.test(n))
+      return `Para hablar con Alberto directamente, lo más rápido es por <a href="${CFG.wa}" target="_blank" rel="noopener" style="color:var(--teal);font-weight:600">WhatsApp</a>. Suele responder el mismo día. También por <a href="${CFG.mail}" style="color:var(--teal);font-weight:600">email</a>.`;
+    const gen=[
+      `Interesante pregunta. Aunque no tengo información específica sobre eso, los asistentes de Alberto cubren atención 24/7, gestión de citas, ventas y cualificación de leads desde <b>99€</b> con entrega en 48h. ¿Sobre qué parte tienes más dudas?`,
+      `No tengo datos exactos sobre eso, pero quizás pueda ayudarte desde otro ángulo. ¿Me cuentas más sobre tu negocio o qué problema concreto quieres resolver con la IA?`,
+      `Para darte la respuesta más precisa sobre eso, ayúdame con un poco más de contexto. ¿De qué tipo de negocio se trata y qué resultado esperas conseguir?`
+    ];
+    return gen[ctx.fbIdx++%gen.length];
+  }
+
+  /* UI HELPERS */
   function addMsg(html,who){
     const d=document.createElement('div');
-    d.className='s7msg '+who;
-    d.innerHTML=html;
-    body.appendChild(d);
-    body.scrollTop=body.scrollHeight;
+    d.className='s7msg '+who;d.innerHTML=html;
+    body.appendChild(d);body.scrollTop=body.scrollHeight;
   }
   function setChips(list){
     chipsEl.innerHTML='';
     list.forEach(t=>{
-      const b=document.createElement('button');
-      b.className='s7-chip';
-      b.textContent=t;
-      b.onclick=()=>handle(t);
-      chipsEl.appendChild(b);
+      const b=document.createElement('button');b.className='s7-chip';b.textContent=t;
+      b.onclick=()=>handle(t);chipsEl.appendChild(b);
     });
   }
-  function showTyping(){
-    const d=document.createElement('div');
-    d.className='s7-typing';d.id='s7typ';
-    d.innerHTML='<i></i><i></i><i></i>';
-    body.appendChild(d);body.scrollTop=body.scrollHeight;
-  }
-  function hideTyping(){const t=document.getElementById('s7typ');if(t)t.remove();}
-
-  function extractName(txt){
-    const n=norm(txt);
-    const patterns=[/me llamo ([a-záéíóúñü]+)/,/mi nombre es ([a-záéíóúñü]+)/,/^soy ([a-záéíóúñü]+)$/];
-    for(const p of patterns){const m=n.match(p);if(m)return m[1].charAt(0).toUpperCase()+m[1].slice(1);}
-    return null;
+  function typing(show){
+    if(show){
+      if(document.getElementById('s7typ'))return;
+      const d=document.createElement('div');d.className='s7-typing';d.id='s7typ';
+      d.innerHTML='<i></i><i></i><i></i>';body.appendChild(d);body.scrollTop=body.scrollHeight;
+    } else {const t=document.getElementById('s7typ');if(t)t.remove();}
   }
 
-  function matchIntent(txt){
-    const n=norm(txt);
-    for(const it of INTENTS){
-      if(it.special==='name'){
-        const nm=extractName(txt);
-        if(nm)return{...it,_name:nm};
-      }
-      for(const kw of it.k){if(n.includes(norm(kw)))return it;}
-    }
-    return null;
-  }
-
-  function buildResponse(it,txt){
-    let html='';
-    if(it.special==='name'){
-      const nm=it._name||extractName(txt);
-      if(nm){
-        mem.name=nm;
-        html=`¡Encantado, <b>${nm}</b>! 🤝 Soy Sirko007. ¿En qué puedo ayudarte hoy?`;
-        setChips(it.c);
-        return html;
-      }
-    }
-    if(it.special==='diag'){
-      mem.inDiag=true;mem.diagStep=0;DIAG_ANSWERS.length=0;
-      html=DIAG_STEPS[0].q;
-      setChips(DIAG_STEPS[0].chips);
-      return html;
-    }
-    html=typeof it.r==='function'?it.r(mem):it.r;
-    if(it.extra==='planBtns')html+=planBtns(false);
-    if(it.extra==='planBtnsSecret')html+=planBtns(true);
-    if(it.extra==='stripeBasico')html+=`<div style="margin-top:10px"><a href="${CFG.sBasico}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:10px;background:var(--grad);color:#04201d;font-weight:700;font-size:13px;text-decoration:none">Contratar Plan Básico — 99€ →</a></div>`;
-    if(it.extra==='stripePro')html+=`<div style="margin-top:10px"><a href="${CFG.sPro}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:10px;background:var(--grad);color:#04201d;font-weight:700;font-size:13px;text-decoration:none">Contratar Plan Profesional — 299€ →</a></div>`;
-    if(it.extra==='stripeEmpresa')html+=`<div style="margin-top:10px"><a href="${CFG.sEmpresa}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:10px;background:var(--grad);color:#04201d;font-weight:700;font-size:13px;text-decoration:none">Contratar Plan Empresa — 599€ →</a></div>`;
-    if(it.extra==='stripeMant')html+=`<div style="margin-top:10px"><a href="${CFG.sMant}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:10px;background:rgba(45,212,191,.15);border:1px solid rgba(45,212,191,.4);color:var(--teal);font-weight:700;font-size:13px;text-decoration:none">Añadir Mantenimiento — 29€/mes →</a></div>`;
-    if(it.extra==='ctaBtns')html+=ctaBtns();
-    setChips(it.c||[]);
-    return html;
-  }
-
-  const FALLBACK_MSGS=[
-    (m)=>`Buena pregunta${m.name?', '+m.name:''}… no tengo esa info codificada, pero Alberto puede responderla en minutos.<br><br>${ctaBtns()}`,
-    (m)=>`Eso escapa a mi base de conocimiento${m.name?', '+m.name:''} 🤔. Lo mejor es hablar directamente con Alberto:<br><br>${ctaBtns()}`,
-    ()=>`Mmm, necesitaría más contexto para responder bien. ¿Qué tal si hablamos directamente con Alberto?<br><br>${ctaBtns()}`
-  ];
-  let fbIdx=0;
-
+  /* HANDLE MESSAGE */
   function handle(txt){
     addMsg(txt,'user');
     chipsEl.innerHTML='';
-    mem.count++;
-
-    // Diagnostic flow
-    if(mem.inDiag){
-      DIAG_ANSWERS.push(txt);
-      showTyping();
-      setTimeout(()=>{
-        hideTyping();
-        if(mem.diagStep<DIAG_STEPS.length-1){
-          mem.diagStep++;
-          addMsg(DIAG_STEPS[mem.diagStep].q,'bot');
-          setChips(DIAG_STEPS[mem.diagStep].chips);
-        } else {
-          mem.inDiag=false;
-          const rec=diagRecommend();
-          let html=`✅ <b>Diagnóstico completado.</b><br><br>Basándome en tus respuestas, te recomiendo:<br><br><b>Plan ${rec.plan} — ${rec.price}</b><br>${rec.why}<br><br><a href="${rec.url}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:10px;background:var(--grad);color:#04201d;font-weight:700;font-size:13.5px;text-decoration:none;margin-top:10px">Contratar Plan ${rec.plan} →</a>`;
-          addMsg(html,'bot');
-          setChips(["Ver todos los planes","Hablar con Alberto","¿Cómo funciona?"]);
-        }
-      },800);
-      return;
-    }
-
-    // Name detection proactivo
     const nm=extractName(txt);
-    if(nm&&!mem.name)mem.name=nm;
+    if(nm&&!ctx.name)ctx.name=nm;
 
-    showTyping();
-    const delay=600+Math.random()*400;
+    typing(true);
     setTimeout(()=>{
-      hideTyping();
-      const it=matchIntent(txt);
-      if(it){
-        const html=buildResponse(it,txt);
-        addMsg(html,'bot');
-      } else {
-        addMsg(FALLBACK_MSGS[fbIdx%FALLBACK_MSGS.length](mem),'bot');
-        fbIdx++;
-        setChips(["Ver planes","Quiero una demo","¿Cómo funciona?","Hablar con Alberto"]);
+      typing(false);
+
+      /* Diagnostic flow */
+      if(ctx.inDiag){
+        ctx.diagAnswers.push(txt);
+        if(ctx.diagStep<DIAG.length-1){
+          ctx.diagStep++;
+          addMsg(DIAG[ctx.diagStep].q,'bot');
+          setChips(DIAG[ctx.diagStep].c);
+        } else {
+          ctx.inDiag=false;
+          const r=diagRec();
+          addMsg(`✅ <b>Diagnóstico completado.</b><br><br>Para tu perfil, el plan ideal es:<br><br><b>Plan ${r.plan} — ${r.price}</b><br>${r.why}${buyBtn('Contratar Plan '+r.plan+' — '+r.price,r.url)}`,'bot');
+        }
+        return;
       }
-    },delay);
+
+      /* Intent matching */
+      const it=findIntent(txt);
+      if(it){
+        if(it.special==='diag'){
+          ctx.inDiag=true;ctx.diagStep=0;ctx.diagAnswers=[];
+          addMsg(DIAG[0].q,'bot');setChips(DIAG[0].c);
+          return;
+        }
+        addMsg(typeof it.r==='function'?it.r():it.r,'bot');
+      } else if(nm){
+        addMsg(`¡Encantado, <b>${nm}</b>! 🤝 Soy Sirko007. ¿En qué puedo ayudarte?`,'bot');
+      } else {
+        addMsg(fallback(txt),'bot');
+      }
+    },500+Math.random()*450);
   }
 
-  const START_CHIPS=["Ver planes y precios","¿Cómo funciona?","Demo gratis","¿Para qué sectores sirve?"];
-
+  /* INIT */
   function greet(){
-    chipsEl.innerHTML='';
-    showTyping();
+    typing(true);
     setTimeout(()=>{
-      hideTyping();
-      addMsg('¡Hola! 👋 Soy <b>Sirko007</b>, el agente de inteligencia de <b>Alberto Landa</b>.<br><br>Puedo contarte todo sobre los planes de IA para tu negocio, cómo funciona el proceso, plazos, y mucho más. ¿Qué te gustaría saber?','bot');
-      setChips(START_CHIPS);
+      typing(false);
+      addMsg('¡Hola! 👋 Soy <b>Sirko007</b>, el asistente de <b>Alberto Landa</b>.<br><br>Puedo resolver cualquier duda sobre los asistentes IA para tu negocio — precios, plazos, cómo funciona, para qué sectores sirve... Escríbeme lo que necesites saber.','bot');
     },700);
   }
 
@@ -1018,18 +974,14 @@ function handleLead(e){
     const p=document.getElementById('botPanel');
     p.classList.toggle('open');
     if(p.classList.contains('open')&&!started){started=true;greet();}
-    if(p.classList.contains('open'))setTimeout(()=>input.focus(),200);
+    if(p.classList.contains('open'))setTimeout(()=>inp.focus(),200);
   };
   window.s7Send=function(){
-    const v=input.value.trim();
-    if(!v)return false;
-    input.value='';
-    handle(v);
-    return false;
+    const v=inp.value.trim();if(!v)return false;
+    inp.value='';handle(v);return false;
   };
   window.openBot=function(key){
-    const p=document.getElementById('botPanel');
-    p.classList.add('open');
+    const p=document.getElementById('botPanel');p.classList.add('open');
     if(!started){started=true;greet();}
     if(key)setTimeout(()=>handle(key),800);
   };
