@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10 tareas que un chatbot puede automatizar en tu negocio | Alberto Landa</title>
+<meta name="description" content="Descubre las 10 tareas más frecuentes que un chatbot IA puede hacer automáticamente por tu negocio, ahorrando tiempo y dinero desde el primer día.">
+<link rel="canonical" href="https://mi-web-ia-beige.vercel.app/blog/que-tareas-puede-automatizar-un-chatbot.html">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"10 tareas que un chatbot puede automatizar en tu negocio","author":{"@type":"Person","name":"Alberto Landa"},"datePublished":"2026-05-20"}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0a0f14;--bg2:#0b1219;--card:#111c25;--card2:#16242f;--line:rgba(255,255,255,.09);--ink:#eaf3f5;--muted:#8fa3ad;--soft:#c4d2d8;--teal:#2dd4bf;--cyan:#22d3ee;--deep:#0fb6a3;--warm:#f6a25c;--grad:linear-gradient(115deg,#22d3ee 0%,#2dd4bf 55%,#0fb6a3 100%);--radius:16px;--shadow:0 24px 60px -24px rgba(0,0,0,.85)}
+  *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}h1,h2,h3,h4,.logo{font-family:'Sora',sans-serif;letter-spacing:-.02em;font-weight:700}
+  .wrap{width:100%;max-width:1160px;margin:0 auto;padding:0 24px}
+  .btn{display:inline-flex;align-items:center;gap:9px;font-weight:600;font-size:15px;padding:13px 22px;border-radius:12px;cursor:pointer;border:0;transition:transform .16s,box-shadow .22s;font-family:inherit}
+  .btn-primary{background:var(--grad);color:#04201d;box-shadow:0 14px 32px -10px rgba(45,212,191,.55)}
+  .btn-primary:hover{transform:translateY(-2px)}
+  .btn-ghost{background:rgba(255,255,255,.05);color:var(--ink);border:1px solid var(--line)}
+  .btn-ghost:hover{background:rgba(255,255,255,.1);border-color:rgba(45,212,191,.4)}
+  header{position:sticky;top:0;z-index:50;backdrop-filter:blur(16px);background:rgba(10,15,20,.7);border-bottom:1px solid transparent;transition:border-color .3s,background .3s}
+  header.scrolled{border-bottom-color:var(--line);background:rgba(10,15,20,.86)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:72px}
+  .logo{display:flex;align-items:center;gap:12px;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:.16em}
+  .logo .mark{width:40px;height:40px;flex:0 0 auto;display:grid;place-items:center}
+  .nav-links{display:flex;gap:28px;font-size:15px;font-weight:500;color:var(--muted)}
+  .nav-links a:hover{color:var(--ink)}.nav .btn{padding:10px 20px;font-size:14px}
+  @media(max-width:900px){.nav-links{display:none}}
+  footer{border-top:1px solid var(--line);padding:44px 0 26px;margin-top:72px;color:var(--muted);font-size:13.5px}
+  .foot-top{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
+  .foot-col h4{font-family:'Sora';color:var(--ink);font-size:12px;text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px}
+  .foot-col a{display:block;color:var(--muted);margin-bottom:8px;font-size:13px}.foot-col a:hover{color:var(--teal)}
+  .foot-bottom{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;margin-top:28px;padding-top:20px;border-top:1px solid var(--line);font-size:12.5px}
+  #cookie{position:fixed;bottom:18px;left:18px;right:18px;max-width:540px;margin:0 auto;z-index:120;background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:16px 18px;box-shadow:var(--shadow);display:none;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+  #cookie p{font-size:13px;color:var(--soft);flex:1;min-width:200px}#cookie a{color:var(--teal);text-decoration:underline}
+  #cookie .btn{padding:8px 14px;font-size:13px}
+
+  .article-hero{padding:64px 0 40px;text-align:center}
+  .article-hero .eyebrow{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);display:block;margin-bottom:16px}
+  .article-hero h1{font-size:clamp(26px,4vw,44px);font-weight:800;max-width:780px;margin:0 auto;line-height:1.15}
+  .article-hero .meta{font-size:13.5px;color:var(--muted);margin-top:18px;display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+  .article-body{max-width:720px;margin:0 auto;padding:0 24px}
+  .article-body p{font-size:16.5px;color:var(--soft);margin-bottom:20px;line-height:1.75}
+  .article-body h2{font-size:26px;font-weight:800;margin:42px 0 16px;color:var(--ink)}
+  .article-body h3{font-size:20px;font-weight:700;margin:32px 0 12px;color:var(--ink)}
+  .article-body ul,.article-body ol{padding-left:22px;margin-bottom:20px}
+  .article-body li{font-size:16px;color:var(--soft);margin-bottom:10px;line-height:1.65}
+  .article-body strong{color:var(--ink);font-weight:600}
+  .article-body blockquote{border-left:3px solid var(--teal);padding:14px 20px;margin:28px 0;background:var(--card);border-radius:0 12px 12px 0;font-size:16.5px;color:var(--soft);font-style:italic}
+  .article-body .highlight-box{background:var(--card2);border:1px solid rgba(45,212,191,.2);border-radius:14px;padding:22px 24px;margin:28px 0}
+  .article-body .highlight-box h4{color:var(--teal);font-size:14px;text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px}
+</style>
+</head>
+<body>
+<header id="hdr">
+  <div class="wrap nav">
+    <a class="logo" href="../index.html"><span class="mark"><svg viewBox="0 0 44 44" width="40" height="40"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset=".55" stop-color="#2dd4bf"/><stop offset="1" stop-color="#0fb6a3"/></linearGradient></defs><rect x="1.5" y="1.5" width="41" height="41" rx="13" fill="none" stroke="url(#lg)" stroke-width="2.4"/><path d="M14 30 L22 13 L30 30" fill="none" stroke="url(#lg)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M17.4 24.2 H26.6" stroke="url(#lg)" stroke-width="2.8" stroke-linecap="round"/><circle cx="22" cy="13" r="2.6" fill="url(#lg)"/></svg></span>Alberto Landa</a>
+    <nav class="nav-links">
+      <a href="../index.html#sobre">Sobre mí</a>
+      <a href="../index.html#como">Cómo funciona</a>
+      <a href="../index.html#planes">Planes</a>
+      <a href="index.html">Blog</a>
+    </nav>
+    <a class="btn btn-primary" href="../index.html#contacto">Demo gratis</a>
+  </div>
+</header>
+<div class="article-hero">
+  <div class="wrap">
+    <span class="eyebrow">Automatización</span>
+    <h1>10 tareas que un chatbot puede hacer por ti hoy mismo</h1>
+    <div class="meta"><span>📅 20 mayo 2026</span><span>⏱ 6 min lectura</span><span>✍️ Alberto Landa</span></div>
+  </div>
+</div>
+<div class="article-body">
+  <p>Cuando la gente habla de chatbots, suele pensar en esas respuestas automáticas frustrantes que no entienden nada de lo que preguntas. Los chatbots basados en IA son radicalmente diferentes: entienden el contexto, aprenden el vocabulario de tu sector y responden de forma natural.</p>
+  <p>Aquí van las 10 tareas que más frecuentemente automatizan los negocios con los que trabajo.</p>
+
+  <h2>1. Responder preguntas frecuentes sobre servicios y precios</h2>
+  <p>El 60-70% de las consultas que recibe cualquier negocio son variantes de las mismas 15-20 preguntas. ¿Cuánto cuesta? ¿Cuánto tarda? ¿Incluye esto o aquello? Un asistente entrenado con tu catálogo responde estas preguntas al instante, en cualquier idioma, a cualquier hora.</p>
+
+  <h2>2. Gestión de citas y disponibilidad</h2>
+  <p>Para negocios que trabajan por cita (clínicas, fisioterapeutas, centros de bienestar, consultores), el asistente puede consultar disponibilidad real e iniciar el proceso de reserva sin que nadie intervenga.</p>
+
+  <h2>3. Cualificación de leads</h2>
+  <p>Antes de que un potencial cliente llegue a ti, el chatbot puede hacer las preguntas clave: qué necesita, cuándo, con qué presupuesto. Así solo hablas con personas que ya encajan con lo que ofreces.</p>
+
+  <h2>4. Presentación de la empresa y servicios</h2>
+  <p>Los visitantes nuevos que llegan a tu web no siempre saben muy bien qué haces. El asistente puede guiarles, explicar tus servicios en función de lo que buscan y recomendar la opción más adecuada.</p>
+
+  <h2>5. Información de horarios, dirección y acceso</h2>
+  <p>Una de las búsquedas más frecuentes en local businesses. El asistente responde instantáneamente y puede incluso abrir Google Maps directamente.</p>
+
+  <h2>6. Recogida de datos para presupuesto</h2>
+  <p>En lugar de esperar a que el cliente rellene un formulario, el asistente puede hacer las preguntas relevantes en conversación y recopilar la información necesaria para preparar una propuesta.</p>
+
+  <h2>7. Derivación inteligente</h2>
+  <p>Cuando el asistente detecta una consulta que requiere atención humana (una urgencia, una queja compleja, un cliente de alto valor), deriva automáticamente al canal adecuado: email, WhatsApp, teléfono.</p>
+
+  <h2>8. Seguimiento post-visita o post-compra</h2>
+  <p>El asistente puede enviar mensajes de seguimiento personalizados días después de una cita o compra, preguntando por la experiencia y ofreciendo la siguiente sesión o producto.</p>
+
+  <h2>9. Respuesta en varios idiomas</h2>
+  <p>Si tienes clientes internacionales o turistas, el asistente detecta el idioma del cliente y responde automáticamente en él. Sin configuración adicional.</p>
+
+  <h2>10. Recopilación de reseñas y feedback</h2>
+  <p>Al finalizar una interacción, el asistente puede pedir al cliente que deje una reseña en Google o Trustpilot, aumentando el número de valoraciones positivas sin esfuerzo por tu parte.</p>
+
+  <blockquote>Un negocio que implementa un chatbot bien entrenado no solo ahorra tiempo: mejora la experiencia del cliente porque recibe respuestas instantáneas y precisas, no esperas ni respuestas genéricas.</blockquote>
+
+  <div style="background:var(--grad);border-radius:20px;padding:40px 32px;text-align:center;margin:52px 0">
+  <h3 style="font-size:24px;color:#04201d;margin-bottom:10px">¿Quieres ver esto aplicado a tu negocio?</h3>
+  <p style="color:rgba(4,32,29,.8);margin-bottom:22px;font-size:16px">La demo es gratis y sin compromiso. Alberto te muestra un asistente configurado con tu caso real.</p>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+    <a href="../index.html#contacto" style="display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:10px;background:#04201d;color:#eafffb;font-weight:700;font-size:14.5px">Solicitar demo gratis →</a>
+    <a href="https://wa.me/34615076926" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:10px;background:rgba(255,255,255,.9);color:#04201d;font-weight:700;font-size:14.5px">💬 WhatsApp</a>
+  </div>
+</div>
+  <p style="text-align:center;margin-top:20px"><a href="index.html" style="color:var(--teal);font-weight:600">← Volver al blog</a></p>
+</div>
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-col">
+        <div class="logo" style="font-size:13px;margin-bottom:10px"><span class="mark"><svg viewBox="0 0 44 44" width="32" height="32"><rect x="1.5" y="1.5" width="41" height="41" rx="13" fill="none" stroke="#2dd4bf" stroke-width="2.4"/><path d="M14 30 L22 13 L30 30" fill="none" stroke="#2dd4bf" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M17.4 24.2 H26.6" stroke="#2dd4bf" stroke-width="2.8" stroke-linecap="round"/><circle cx="22" cy="13" r="2.6" fill="#2dd4bf"/></svg></span>Alberto Landa</div>
+        <p style="font-size:13px;color:var(--muted)">Asistentes de IA para negocios.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Blog</h4>
+        <a href="como-usar-ia-en-un-pequeno-negocio.html">Cómo usar IA en tu negocio</a>
+        <a href="que-tareas-puede-automatizar-un-chatbot.html">Tareas automatizables</a>
+        <a href="atencion-al-cliente-24-horas.html">Atención 24 horas</a>
+        <a href="ia-para-centros-de-bienestar.html">IA para bienestar</a>
+        <a href="ia-para-fisioterapeutas.html">IA para fisio</a>
+      </div>
+      <div class="foot-col">
+        <h4>Sectores</h4>
+        <a href="../ia-para-centros-de-bienestar.html">Bienestar</a>
+        <a href="../ia-para-clinicas.html">Clínicas</a>
+        <a href="../ia-para-fisioterapeutas.html">Fisio</a>
+        <a href="../ia-para-autonomos.html">Autónomos</a>
+      </div>
+      <div class="foot-col">
+        <h4>Contacto</h4>
+        <a href="mailto:albertolm822@gmail.com">albertolm822@gmail.com</a>
+        <a href="https://wa.me/34615076926">WhatsApp</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Alberto Landa.</span>
+      <a href="../index.html" style="color:var(--teal)">← Inicio</a>
+    </div>
+  </div>
+</footer>
+<div id="cookie"><p>Usamos cookies técnicas. <a href="../cookies.html">Más info</a>.</p><button class="btn btn-primary" onclick="okCookies()">Entendido</button></div>
+<script>
+const hdr=document.getElementById('hdr');addEventListener('scroll',()=>hdr.classList.toggle('scrolled',scrollY>10));
+function okCookies(){try{localStorage.setItem('ck','1')}catch(e){}document.getElementById('cookie').style.display='none';}
+(function(){let ok=false;try{ok=localStorage.getItem('ck')==='1'}catch(e){}if(!ok)setTimeout(()=>document.getElementById('cookie').style.display='flex',1200);})();
+</script>
+</body></html>
