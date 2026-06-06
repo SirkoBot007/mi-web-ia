@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mi-web-ia-beige.vercel.app/sitemap.xml
